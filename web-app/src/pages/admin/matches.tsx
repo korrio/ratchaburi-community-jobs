@@ -21,7 +21,8 @@ import {
   GitMerge,
   Zap,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  DollarSign
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import ProviderQuestionnaire from '@/components/ProviderQuestionnaire';
@@ -277,12 +278,12 @@ const AdminMatches: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <TrendingUp className="h-8 w-8 text-purple-600" />
+                <DollarSign className="h-8 w-8 text-purple-600" />
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500">คะแนนเฉลี่ย</p>
+                <p className="text-sm font-medium text-gray-500">รายได้ชุมชน</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {matches.length > 0 ? (matches.reduce((acc, m) => acc + m.match_score, 0) / matches.length * 100).toFixed(1) : 0}%
+                  5,000 บาท
                 </p>
               </div>
             </div>
