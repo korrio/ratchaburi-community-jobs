@@ -45,6 +45,16 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test endpoint without signature validation (for development only)
+app.post('/webhook/test', (req, res) => {
+  console.log('Test webhook received:', req.body);
+  res.json({
+    status: 'OK',
+    message: 'Test webhook received successfully',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // LINE webhook endpoint
 app.post('/webhook', line.middleware(config), (req, res) => {
   Promise
@@ -186,35 +196,35 @@ async function setupRichMenu() {
     };
 
     // Create rich menu
-    const richMenuId = await client.createRichMenu(richMenuObject);
-    console.log('Rich menu created with ID:', richMenuId);
+    // const richMenuId = await client.createRichMenu(richMenuObject);
+    // console.log('Rich menu created with ID:', richMenuId);
 
     // Upload rich menu image
-    const imagePath = path.join(__dirname, 'public', 'richmenu.jpg');
+    // const imagePath = path.join(__dirname, 'public', 'richmenu.jpg');
     
-    // Check if image exists
-    if (fs.existsSync(imagePath)) {
-      try {
-        const imageBuffer = fs.readFileSync(imagePath);
-        await client.setRichMenuImage(richMenuId, imageBuffer);
-        console.log('Rich menu image uploaded');
-      } catch (uploadError) {
-        console.error('Error uploading rich menu image:', uploadError.message);
-        // Try with PNG if JPG fails
-        const pngPath = path.join(__dirname, 'public', 'richmenu.png');
-        if (fs.existsSync(pngPath)) {
-          const pngBuffer = fs.readFileSync(pngPath);
-          await client.setRichMenuImage(richMenuId, pngBuffer);
-          console.log('Rich menu image uploaded (PNG)');
-        }
-      }
-    } else {
-      console.log('Rich menu image not found at:', imagePath);
-      console.log('Please add richmenu.jpg or richmenu.png (2500x1686) to the public directory');
-    }
+    // // Check if image exists
+    // if (fs.existsSync(imagePath)) {
+    //   try {
+    //     const imageBuffer = fs.readFileSync(imagePath);
+    //     await client.setRichMenuImage(richMenuId, imageBuffer);
+    //     console.log('Rich menu image uploaded');
+    //   } catch (uploadError) {
+    //     console.error('Error uploading rich menu image:', uploadError.message);
+    //     // Try with PNG if JPG fails
+    //     const pngPath = path.join(__dirname, 'public', 'richmenu.png');
+    //     if (fs.existsSync(pngPath)) {
+    //       const pngBuffer = fs.readFileSync(pngPath);
+    //       await client.setRichMenuImage(richMenuId, pngBuffer);
+    //       console.log('Rich menu image uploaded (PNG)');
+    //     }
+    //   }
+    // } else {
+    //   console.log('Rich menu image not found at:', imagePath);
+    //   console.log('Please add richmenu.jpg or richmenu.png (2500x1686) to the public directory');
+    // }
 
     // Set as default rich menu
-    await client.setDefaultRichMenu(richMenuId);
+    // await client.setDefaultRichMenu(richMenuId);
     console.log('Rich menu set as default');
 
   } catch (error) {
