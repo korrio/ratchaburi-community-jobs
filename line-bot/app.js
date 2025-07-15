@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const cron = require('node-cron');
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
@@ -177,7 +178,7 @@ async function setupRichMenu() {
     console.log('Rich menu created with ID:', richMenuId);
 
     // Note: In a real implementation, you would upload the rich menu image here
-    // await client.setRichMenuImage(richMenuId, fs.createReadStream('path/to/richmenu.png'));
+    await client.setRichMenuImage(richMenuId, fs.createReadStream('public/richmenu.jpg'));
 
     // Set as default rich menu
     await client.setDefaultRichMenu(richMenuId);
