@@ -1,0 +1,70 @@
+{
+  "name": "ratchaburi-community-jobs",
+  "version": "1.0.0",
+  "description": "Community Job Matching Platform for Ratchaburi Province",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm run install:backend && npm run install:web && npm run install:bot",
+    "install:backend": "cd backend && npm install",
+    "install:web": "cd web-app && npm install",
+    "install:bot": "cd line-bot && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:web\" \"npm run dev:bot\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:web": "cd web-app && npm run dev",
+    "dev:bot": "cd line-bot && npm run dev",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:web\" \"npm run start:bot\"",
+    "start:backend": "cd backend && npm start",
+    "start:web": "cd web-app && npm start",
+    "start:bot": "cd line-bot && npm start",
+    "build": "npm run build:web",
+    "build:web": "cd web-app && npm run build",
+    "test": "npm run test:backend && npm run test:web && npm run test:bot",
+    "test:backend": "cd backend && npm test",
+    "test:web": "cd web-app && npm test",
+    "test:bot": "cd line-bot && npm test",
+    "seed": "cd backend && npm run seed",
+    "clean": "npm run clean:backend && npm run clean:web && npm run clean:bot",
+    "clean:backend": "cd backend && rm -rf node_modules",
+    "clean:web": "cd web-app && rm -rf node_modules .next",
+    "clean:bot": "cd line-bot && rm -rf node_modules",
+    "setup": "npm run install:all && npm run seed",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
+  },
+  "workspaces": [
+    "backend",
+    "web-app",
+    "line-bot"
+  ],
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/korrio/ratchaburi-community-jobs.git"
+  },
+  "keywords": [
+    "community",
+    "jobs",
+    "ratchaburi",
+    "thailand",
+    "nextjs",
+    "expressjs",
+    "line-bot",
+    "sqlite"
+  ],
+  "author": "Ratchaburi Community Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/korrio/ratchaburi-community-jobs/issues"
+  },
+  "homepage": "https://github.com/korrio/ratchaburi-community-jobs#readme"
+}

@@ -44,6 +44,27 @@
 - SQLite (v3 หรือสูงกว่า)
 - LINE Developer Account (สำหรับการพัฒนา LINE Chatbot)
 
+### Quick Start (แนะนำ)
+
+```bash
+# โคลนโปรเจ็ค
+git clone https://github.com/korrio/ratchaburi-community-jobs.git
+cd ratchaburi-community-jobs
+
+# รันสคริปต์เริ่มต้น
+./start.sh
+```
+
+หรือใช้คำสั่ง npm:
+
+```bash
+# ติดตั้ง dependencies ทั้งหมด
+npm run setup
+
+# เริ่มต้นทุกบริการในโหมดพัฒนา
+npm run dev
+```
+
 ### ติดตั้ง Backend API
 
 ```bash
