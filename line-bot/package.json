@@ -1,0 +1,32 @@
+{
+  "name": "ratchaburi-community-jobs-linebot",
+  "version": "1.0.0",
+  "description": "LINE Bot for Ratchaburi Community Jobs platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest"
+  },
+  "keywords": ["linebot", "community", "jobs", "ratchaburi"],
+  "author": "Ratchaburi Community Team",
+  "license": "MIT",
+  "dependencies": {
+    "@line/bot-sdk": "^8.0.0",
+    "express": "^4.18.2",
+    "axios": "^1.5.0",
+    "dotenv": "^16.3.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.6.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
