@@ -1,12 +1,13 @@
 # Rich Menu Image Directory
 
-Place your rich menu image file here with the name `richmenu.jpg` (2500x1686 pixels).
+Place your rich menu image file here with the name `richmenu.jpg` or `richmenu.png` (2500x1686 pixels).
 
 ## Image Requirements:
-- Filename: `richmenu.jpg`
-- Dimensions: 2500 x 1686 pixels
+- Filename: `richmenu.jpg` or `richmenu.png`
+- Dimensions: 2500 x 1686 pixels (exact)
 - Format: JPEG or PNG
 - Max file size: 1MB
+- Color mode: RGB (not CMYK)
 
 ## How to Generate:
 1. Use the ChatGPT/DALL-E prompt provided in the main documentation

@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const cron = require('node-cron');
 const fs = require('fs');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -89,6 +90,17 @@ async function handleEvent(event) {
 // Rich Menu setup
 async function setupRichMenu() {
   try {
+    // Clean up existing rich menus
+    try {
+      const richMenus = await client.getRichMenuList();
+      for (const menu of richMenus) {
+        await client.deleteRichMenu(menu.richMenuId);
+        console.log('Deleted existing rich menu:', menu.richMenuId);
+      }
+    } catch (cleanupError) {
+      console.log('No existing rich menus to clean up');
+    }
+
     const richMenuObject = {
       size: {
         width: 2500,
@@ -177,8 +189,29 @@ async function setupRichMenu() {
     const richMenuId = await client.createRichMenu(richMenuObject);
     console.log('Rich menu created with ID:', richMenuId);
 
-    // Note: In a real implementation, you would upload the rich menu image here
-    await client.setRichMenuImage(richMenuId, fs.createReadStream('public/richmenu.jpg'));
+    // Upload rich menu image
+    const imagePath = path.join(__dirname, 'public', 'richmenu.jpg');
+    
+    // Check if image exists
+    if (fs.existsSync(imagePath)) {
+      try {
+        const imageBuffer = fs.readFileSync(imagePath);
+        await client.setRichMenuImage(richMenuId, imageBuffer);
+        console.log('Rich menu image uploaded');
+      } catch (uploadError) {
+        console.error('Error uploading rich menu image:', uploadError.message);
+        // Try with PNG if JPG fails
+        const pngPath = path.join(__dirname, 'public', 'richmenu.png');
+        if (fs.existsSync(pngPath)) {
+          const pngBuffer = fs.readFileSync(pngPath);
+          await client.setRichMenuImage(richMenuId, pngBuffer);
+          console.log('Rich menu image uploaded (PNG)');
+        }
+      }
+    } else {
+      console.log('Rich menu image not found at:', imagePath);
+      console.log('Please add richmenu.jpg or richmenu.png (2500x1686) to the public directory');
+    }
 
     // Set as default rich menu
     await client.setDefaultRichMenu(richMenuId);
