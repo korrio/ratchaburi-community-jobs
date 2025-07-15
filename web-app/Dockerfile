@@ -1,22 +1,22 @@
-FROM node:18-alpine AS builder
+FROM oven/bun:latest AS builder
 
 # Create app directory
 WORKDIR /app
 
 # Copy package files
-COPY package.json ./
+COPY package.json bun.lockb* ./
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Copy app source
 COPY . .
 
 # Build the Next.js app
-RUN npm run build
+RUN bun run build
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM oven/bun:latest AS runner
 
 WORKDIR /app
 
@@ -24,13 +24,14 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/bun.lockb* ./
 COPY --from=builder /app/next.config.js ./
 
 # Install only production dependencies
-RUN npm install --omit=dev
+RUN bun install --production
 
 # Expose port
 EXPOSE 3000
 
 # Run the application
-CMD ["npm", "start"]
+CMD ["bun", "run", "start"]

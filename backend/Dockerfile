@@ -1,13 +1,13 @@
-FROM node:18-alpine
+FROM oven/bun:latest
 
 # Create app directory
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json bun.lockb* ./
 
 # Install production dependencies
-RUN npm ci --only=production
+RUN bun install --production
 
 # Copy app source
 COPY . .
@@ -19,4 +19,4 @@ RUN mkdir -p /app/data
 EXPOSE 5000
 
 # Run the application
-CMD ["node", "server.js"]
+CMD ["bun", "server.js"]
