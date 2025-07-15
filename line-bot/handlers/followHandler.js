@@ -12,7 +12,7 @@ class FollowHandler {
       // Send welcome message
       const welcomeMessage = templates.createWelcomeMessage(displayName);
       
-      await client.replyToken(event.replyToken, welcomeMessage);
+      await client.replyMessage(event.replyToken, welcomeMessage);
       
       // Log the follow event
       console.log(`User ${displayName} (${userId}) started following the bot`);
@@ -25,7 +25,7 @@ class FollowHandler {
       
       // Send default welcome message if profile fetch fails
       const defaultWelcome = templates.createWelcomeMessage();
-      await client.replyToken(event.replyToken, defaultWelcome);
+      await client.replyMessage(event.replyToken, defaultWelcome);
     }
   }
 

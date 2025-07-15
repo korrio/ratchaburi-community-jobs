@@ -6,20 +6,20 @@ const apiClient = require('../utils/apiClient');
 class MessageHandler {
   async handleTextMessage(event, client) {
     const userMessage = event.message.text.toLowerCase().trim();
-    const userId = event.source.userId;
+    const replyToken = event.replyToken;
 
     // Command matching
     const commands = {
-      'สวัสดี': () => this.sendWelcomeMessage(client, userId),
-      'ค้นหาผู้ให้บริการ': () => this.searchProviders(client, userId),
-      'ค้นหางาน': () => this.searchJobs(client, userId),
-      'จับคู่งาน': () => this.autoMatch(client, userId),
-      'ลงทะเบียนผู้ให้บริการ': () => this.registerProvider(client, userId),
-      'ลงทะเบียนงาน': () => this.registerCustomer(client, userId),
-      'ช่วยเหลือ': () => this.sendHelpMessage(client, userId),
-      'help': () => this.sendHelpMessage(client, userId),
-      'เริ่มต้น': () => this.sendWelcomeMessage(client, userId),
-      'start': () => this.sendWelcomeMessage(client, userId),
+      'สวัสดี': () => this.sendWelcomeMessage(client, replyToken),
+      'ค้นหาผู้ให้บริการ': () => this.searchProviders(client, replyToken),
+      'ค้นหางาน': () => this.searchJobs(client, replyToken),
+      'จับคู่งาน': () => this.autoMatch(client, replyToken),
+      'ลงทะเบียนผู้ให้บริการ': () => this.registerProvider(client, replyToken),
+      'ลงทะเบียนงาน': () => this.registerCustomer(client, replyToken),
+      'ช่วยเหลือ': () => this.sendHelpMessage(client, replyToken),
+      'help': () => this.sendHelpMessage(client, replyToken),
+      'เริ่มต้น': () => this.sendWelcomeMessage(client, replyToken),
+      'start': () => this.sendWelcomeMessage(client, replyToken),
     };
 
     // Check for exact command match
@@ -29,27 +29,27 @@ class MessageHandler {
 
     // Check for partial matches or keywords
     if (userMessage.includes('ช่าง') || userMessage.includes('บริการ')) {
-      return this.searchProviders(client, userId, userMessage);
+      return this.searchProviders(client, replyToken, userMessage);
     }
 
     if (userMessage.includes('งาน') || userMessage.includes('จ้าง')) {
-      return this.searchJobs(client, userId, userMessage);
+      return this.searchJobs(client, replyToken, userMessage);
     }
 
     if (userMessage.includes('ติดต่อ') || userMessage.includes('สอบถาม')) {
-      return this.sendContactInfo(client, userId);
+      return this.sendContactInfo(client, replyToken);
     }
 
     // Default response with quick replies
-    return this.sendDefaultResponse(client, userId);
+    return this.sendDefaultResponse(client, replyToken);
   }
 
-  async sendWelcomeMessage(client, userId) {
+  async sendWelcomeMessage(client, replyToken) {
     const welcomeMessage = templates.createWelcomeMessage();
-    return client.replyToken(userId, welcomeMessage);
+    return client.replyMessage(replyToken, welcomeMessage);
   }
 
-  async searchProviders(client, userId, query = '') {
+  async searchProviders(client, replyToken, query = '') {
     try {
       const response = await apiClient.get('/providers', {
         params: {
@@ -63,25 +63,25 @@ class MessageHandler {
       const providers = response.data.data;
       
       if (providers.length === 0) {
-        return client.replyToken(userId, {
+        return client.replyMessage(replyToken, {
           type: 'text',
           text: 'ไม่พบผู้ให้บริการที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง'
         });
       }
 
       const providerCards = templates.createProviderCarousel(providers);
-      return client.replyToken(userId, providerCards);
+      return client.replyMessage(replyToken, providerCards);
 
     } catch (error) {
       console.error('Error searching providers:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง'
       });
     }
   }
 
-  async searchJobs(client, userId, query = '') {
+  async searchJobs(client, replyToken, query = '') {
     try {
       const response = await apiClient.get('/customers', {
         params: {
@@ -95,25 +95,25 @@ class MessageHandler {
       const customers = response.data.data;
       
       if (customers.length === 0) {
-        return client.replyToken(userId, {
+        return client.replyMessage(replyToken, {
           type: 'text',
           text: 'ไม่พบงานที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง'
         });
       }
 
       const jobCards = templates.createJobCarousel(customers);
-      return client.replyToken(userId, jobCards);
+      return client.replyMessage(replyToken, jobCards);
 
     } catch (error) {
       console.error('Error searching jobs:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง'
       });
     }
   }
 
-  async autoMatch(client, userId) {
+  async autoMatch(client, replyToken) {
     try {
       const response = await apiClient.get('/auto-matches', {
         params: { limit: 10 }
@@ -122,25 +122,25 @@ class MessageHandler {
       const matches = response.data.data;
       
       if (matches.length === 0) {
-        return client.replyToken(userId, {
+        return client.replyMessage(replyToken, {
           type: 'text',
           text: 'ยังไม่มีการจับคู่งานในขณะนี้ กรุณาลองใหม่อีกครั้งภายหลัง'
         });
       }
 
       const matchCards = templates.createMatchCarousel(matches);
-      return client.replyToken(userId, matchCards);
+      return client.replyMessage(replyToken, matchCards);
 
     } catch (error) {
       console.error('Error getting auto matches:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง'
       });
     }
   }
 
-  async registerProvider(client, userId) {
+  async registerProvider(client, replyToken) {
     const message = {
       type: 'text',
       text: '📝 การลงทะเบียนผู้ให้บริการ\n\n' +
@@ -171,10 +171,10 @@ class MessageHandler {
       }
     };
 
-    return client.replyToken(userId, message);
+    return client.replyMessage(replyToken, message);
   }
 
-  async registerCustomer(client, userId) {
+  async registerCustomer(client, replyToken) {
     const message = {
       type: 'text',
       text: '📝 การลงทะเบียนผู้ต้องการจ้างงาน\n\n' +
@@ -205,15 +205,15 @@ class MessageHandler {
       }
     };
 
-    return client.replyToken(userId, message);
+    return client.replyMessage(replyToken, message);
   }
 
-  async sendHelpMessage(client, userId) {
+  async sendHelpMessage(client, replyToken) {
     const helpMessage = templates.createHelpMessage();
-    return client.replyToken(userId, helpMessage);
+    return client.replyMessage(replyToken, helpMessage);
   }
 
-  async sendContactInfo(client, userId) {
+  async sendContactInfo(client, replyToken) {
     const contactMessage = {
       type: 'text',
       text: '📞 ติดต่อเรา\n\n' +
@@ -225,10 +225,10 @@ class MessageHandler {
             '⏰ เวลาทำการ: จันทร์-ศุกร์ 08:00-16:30 น.'
     };
 
-    return client.replyToken(userId, contactMessage);
+    return client.replyMessage(replyToken, contactMessage);
   }
 
-  async sendDefaultResponse(client, userId) {
+  async sendDefaultResponse(client, replyToken) {
     const message = {
       type: 'text',
       text: '🤖 ไม่เข้าใจคำสั่ง กรุณาเลือกจากเมนูด้านล่างหรือพิมพ์:\n\n' +
@@ -276,7 +276,7 @@ class MessageHandler {
       }
     };
 
-    return client.replyToken(userId, message);
+    return client.replyMessage(replyToken, message);
   }
 }
 

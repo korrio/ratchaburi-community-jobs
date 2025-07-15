@@ -5,6 +5,7 @@ const apiClient = require('../utils/apiClient');
 class PostbackHandler {
   async handlePostback(event, client) {
     const userId = event.source.userId;
+    const replyToken = event.replyToken;
     const postbackData = event.postback.data;
     
     // Parse postback data
@@ -17,107 +18,107 @@ class PostbackHandler {
 
     switch (action) {
       case 'search_providers':
-        return messageHandler.searchProviders(client, userId);
+        return messageHandler.searchProviders(client, replyToken);
       
       case 'search_jobs':
-        return messageHandler.searchJobs(client, userId);
+        return messageHandler.searchJobs(client, replyToken);
       
       case 'auto_match':
-        return messageHandler.autoMatch(client, userId);
+        return messageHandler.autoMatch(client, replyToken);
       
       case 'register_provider':
-        return messageHandler.registerProvider(client, userId);
+        return messageHandler.registerProvider(client, replyToken);
       
       case 'register_customer':
-        return messageHandler.registerCustomer(client, userId);
+        return messageHandler.registerCustomer(client, replyToken);
       
       case 'help':
-        return messageHandler.sendHelpMessage(client, userId);
+        return messageHandler.sendHelpMessage(client, replyToken);
       
       case 'view_provider':
-        return this.viewProviderDetail(client, userId, id);
+        return this.viewProviderDetail(client, replyToken, id);
       
       case 'view_customer':
-        return this.viewCustomerDetail(client, userId, id);
+        return this.viewCustomerDetail(client, replyToken, id);
       
       case 'view_match':
-        return this.viewMatchDetail(client, userId, id);
+        return this.viewMatchDetail(client, replyToken, id);
       
       case 'contact_provider':
-        return this.contactProvider(client, userId, id);
+        return this.contactProvider(client, replyToken, id);
       
       case 'contact_customer':
-        return this.contactCustomer(client, userId, id);
+        return this.contactCustomer(client, replyToken, id);
       
       case 'filter_category':
-        return this.filterByCategory(client, userId, id, type);
+        return this.filterByCategory(client, replyToken, id, type);
       
       case 'filter_location':
-        return this.filterByLocation(client, userId, params.get('district'), params.get('subdistrict'));
+        return this.filterByLocation(client, replyToken, params.get('district'), params.get('subdistrict'));
       
       case 'show_categories':
-        return this.showCategories(client, userId);
+        return this.showCategories(client, replyToken);
       
       case 'show_locations':
-        return this.showLocations(client, userId);
+        return this.showLocations(client, replyToken);
       
       default:
-        return this.handleUnknownPostback(client, userId);
+        return this.handleUnknownPostback(client, replyToken);
     }
   }
 
-  async viewProviderDetail(client, userId, providerId) {
+  async viewProviderDetail(client, replyToken, providerId) {
     try {
       const response = await apiClient.get(`/providers/${providerId}`);
       const provider = response.data.data;
       
       const detailMessage = templates.createProviderDetail(provider);
-      return client.replyToken(userId, detailMessage);
+      return client.replyMessage(replyToken, detailMessage);
       
     } catch (error) {
       console.error('Error fetching provider detail:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูรายละเอียดผู้ให้บริการได้'
       });
     }
   }
 
-  async viewCustomerDetail(client, userId, customerId) {
+  async viewCustomerDetail(client, replyToken, customerId) {
     try {
       const response = await apiClient.get(`/customers/${customerId}`);
       const customer = response.data.data;
       
       const detailMessage = templates.createCustomerDetail(customer);
-      return client.replyToken(userId, detailMessage);
+      return client.replyMessage(replyToken, detailMessage);
       
     } catch (error) {
       console.error('Error fetching customer detail:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูรายละเอียดงานได้'
       });
     }
   }
 
-  async viewMatchDetail(client, userId, matchId) {
+  async viewMatchDetail(client, replyToken, matchId) {
     try {
       const response = await apiClient.get(`/matches/${matchId}`);
       const match = response.data.data;
       
       const detailMessage = templates.createMatchDetail(match);
-      return client.replyToken(userId, detailMessage);
+      return client.replyMessage(replyToken, detailMessage);
       
     } catch (error) {
       console.error('Error fetching match detail:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูรายละเอียดการจับคู่งานได้'
       });
     }
   }
 
-  async contactProvider(client, userId, providerId) {
+  async contactProvider(client, replyToken, providerId) {
     try {
       const response = await apiClient.get(`/providers/${providerId}`);
       const provider = response.data.data;
@@ -153,18 +154,18 @@ class PostbackHandler {
         }
       };
       
-      return client.replyToken(userId, contactMessage);
+      return client.replyMessage(replyToken, contactMessage);
       
     } catch (error) {
       console.error('Error getting provider contact:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูข้อมูลติดต่อได้'
       });
     }
   }
 
-  async contactCustomer(client, userId, customerId) {
+  async contactCustomer(client, replyToken, customerId) {
     try {
       const response = await apiClient.get(`/customers/${customerId}`);
       const customer = response.data.data;
@@ -201,18 +202,18 @@ class PostbackHandler {
         }
       };
       
-      return client.replyToken(userId, contactMessage);
+      return client.replyMessage(replyToken, contactMessage);
       
     } catch (error) {
       console.error('Error getting customer contact:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูข้อมูลติดต่อได้'
       });
     }
   }
 
-  async filterByCategory(client, userId, categoryId, type) {
+  async filterByCategory(client, replyToken, categoryId, type) {
     try {
       const endpoint = type === 'provider' ? '/providers' : '/customers';
       const response = await apiClient.get(endpoint, {
@@ -227,7 +228,7 @@ class PostbackHandler {
       const items = response.data.data;
       
       if (items.length === 0) {
-        return client.replyToken(userId, {
+        return client.replyMessage(replyToken, {
           type: 'text',
           text: 'ไม่พบรายการในหมวดหมู่นี้'
         });
@@ -237,49 +238,49 @@ class PostbackHandler {
         ? templates.createProviderCarousel(items)
         : templates.createJobCarousel(items);
         
-      return client.replyToken(userId, carousel);
+      return client.replyMessage(replyToken, carousel);
       
     } catch (error) {
       console.error('Error filtering by category:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย เกิดข้อผิดพลาดในการกรอง'
       });
     }
   }
 
-  async filterByLocation(client, userId, district, subdistrict) {
+  async filterByLocation(client, replyToken, district, subdistrict) {
     // Implementation for location filtering
-    return client.replyToken(userId, {
+    return client.replyMessage(replyToken, {
       type: 'text',
       text: 'ฟีเจอร์การกรองตามพื้นที่กำลังพัฒนา'
     });
   }
 
-  async showCategories(client, userId) {
+  async showCategories(client, replyToken) {
     try {
       const response = await apiClient.get('/providers/categories');
       const categories = response.data.data;
       
       const categoryMessage = templates.createCategorySelection(categories);
-      return client.replyToken(userId, categoryMessage);
+      return client.replyMessage(replyToken, categoryMessage);
       
     } catch (error) {
       console.error('Error fetching categories:', error);
-      return client.replyToken(userId, {
+      return client.replyMessage(replyToken, {
         type: 'text',
         text: 'ขออภัย ไม่สามารถดูหมวดหมู่บริการได้'
       });
     }
   }
 
-  async showLocations(client, userId) {
+  async showLocations(client, replyToken) {
     const locationMessage = templates.createLocationSelection();
-    return client.replyToken(userId, locationMessage);
+    return client.replyMessage(replyToken, locationMessage);
   }
 
-  async handleUnknownPostback(client, userId) {
-    return client.replyToken(userId, {
+  async handleUnknownPostback(client, replyToken) {
+    return client.replyMessage(replyToken, {
       type: 'text',
       text: 'ขออภัย ไม่เข้าใจคำสั่ง กรุณาเลือกจากเมนูด้านล่าง'
     });
