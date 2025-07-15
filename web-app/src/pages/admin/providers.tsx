@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { apiEndpoints } from '@/utils/api';
-import { ServiceProvider, ProviderFormData, ServiceCategory } from '@/utils/types';
+import { ServiceProvider, ProviderFormData, ProviderFormErrors, ServiceCategory } from '@/utils/types';
 import { DISTRICTS, SUBDISTRICTS } from '@/utils/types';
 
 const AdminProviders: React.FC = () => {
@@ -51,7 +51,7 @@ const AdminProviders: React.FC = () => {
     is_active: true
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<ProviderFormData>>({});
+  const [formErrors, setFormErrors] = useState<ProviderFormErrors>({});
 
   // Fetch providers
   const { data: providersData, isLoading } = useQuery(
@@ -144,7 +144,7 @@ const AdminProviders: React.FC = () => {
     }));
 
     // Clear error when user starts typing
-    if (formErrors[name as keyof ProviderFormData]) {
+    if (formErrors[name as keyof ProviderFormErrors]) {
       setFormErrors(prev => ({
         ...prev,
         [name]: undefined
@@ -162,7 +162,7 @@ const AdminProviders: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProviderFormData> = {};
+    const newErrors: ProviderFormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'กรุณากรอกชื่อ';

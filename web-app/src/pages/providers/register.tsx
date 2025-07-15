@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { apiEndpoints } from '@/utils/api';
-import { ProviderFormData, ServiceCategory } from '@/utils/types';
+import { ProviderFormData, ProviderFormErrors, ServiceCategory } from '@/utils/types';
 import { DISTRICTS, SUBDISTRICTS } from '@/utils/types';
 
 const ProviderRegisterPage: React.FC = () => {
@@ -38,7 +38,7 @@ const ProviderRegisterPage: React.FC = () => {
     is_active: true
   });
 
-  const [errors, setErrors] = useState<Partial<ProviderFormData>>({});
+  const [errors, setErrors] = useState<ProviderFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch categories for dropdown
@@ -74,7 +74,7 @@ const ProviderRegisterPage: React.FC = () => {
     }));
 
     // Clear error when user starts typing
-    if (errors[name as keyof ProviderFormData]) {
+    if (errors[name as keyof ProviderFormErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: undefined
@@ -92,7 +92,7 @@ const ProviderRegisterPage: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProviderFormData> = {};
+    const newErrors: ProviderFormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'กรุณากรอกชื่อ';

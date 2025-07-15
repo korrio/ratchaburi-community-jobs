@@ -274,7 +274,7 @@ const JobCompletionPage: React.FC = () => {
       {/* Provider Questionnaire */}
       <ProviderQuestionnaire
         matchId={match.id.toString()}
-        customerName={match.customer_name}
+        customerName={match.customer_name || ''}
         jobDescription={match.job_description || ''}
         isOpen={isProviderQuestionnaireOpen}
         onClose={() => setIsProviderQuestionnaireOpen(false)}
@@ -284,9 +284,9 @@ const JobCompletionPage: React.FC = () => {
       {/* Customer Questionnaire */}
       <CustomerQuestionnaire
         matchId={match.id.toString()}
-        providerName={match.provider_name}
+        providerName={match.provider_name || ''}
         jobDescription={match.job_description || ''}
-        serviceCategory={match.category_name}
+        serviceCategory={match.category_name || ''}
         isOpen={isCustomerQuestionnaireOpen}
         onClose={() => setIsCustomerQuestionnaireOpen(false)}
         onSubmit={handleCustomerQuestionnaireComplete}

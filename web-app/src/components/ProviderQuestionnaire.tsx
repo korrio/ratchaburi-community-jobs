@@ -41,6 +41,17 @@ interface ProviderQuestionnaireData {
   feedback_for_platform: string;
 }
 
+interface ProviderQuestionnaireErrors {
+  payment_amount?: string;
+  payment_method?: string;
+  job_completion_date?: string;
+  actual_hours_worked?: string;
+  additional_services_offered?: string;
+  challenges_faced?: string;
+  suggestions_for_improvement?: string;
+  feedback_for_platform?: string;
+}
+
 const ProviderQuestionnaire: React.FC<ProviderQuestionnaireProps> = ({
   matchId,
   customerName,
@@ -67,7 +78,7 @@ const ProviderQuestionnaire: React.FC<ProviderQuestionnaireProps> = ({
     feedback_for_platform: ''
   });
 
-  const [errors, setErrors] = useState<Partial<ProviderQuestionnaireData>>({});
+  const [errors, setErrors] = useState<ProviderQuestionnaireErrors>({});
 
   const submitQuestionnaireMutation = useMutation(
     (data: any) => apiEndpoints.submitProviderQuestionnaire?.(matchId, data) || Promise.resolve(),
@@ -91,7 +102,7 @@ const ProviderQuestionnaire: React.FC<ProviderQuestionnaireProps> = ({
     }));
 
     // Clear error when user starts typing
-    if (errors[name as keyof ProviderQuestionnaireData]) {
+    if (errors[name as keyof ProviderQuestionnaireErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: undefined
@@ -100,7 +111,7 @@ const ProviderQuestionnaire: React.FC<ProviderQuestionnaireProps> = ({
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProviderQuestionnaireData> = {};
+    const newErrors: ProviderQuestionnaireErrors = {};
 
     if (!formData.job_completion_date) {
       newErrors.job_completion_date = 'กรุณาระบุวันที่ทำงานเสร็จ';

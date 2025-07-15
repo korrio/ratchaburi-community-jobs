@@ -32,7 +32,7 @@ const CustomerDetailPage: React.FC = () => {
   // Fetch customer details
   const { data: customerData, isLoading: isLoadingCustomer, error: customerError } = useQuery(
     ['customer', id],
-    () => apiEndpoints.getCustomer(Number(id)),
+    () => apiEndpoints.getCustomer(id as string),
     { enabled: !!id }
   );
 
@@ -312,7 +312,7 @@ const CustomerDetailPage: React.FC = () => {
                           <CheckCircle className="h-8 w-8 text-green-600" />
                         </div>
                         <div className="text-2xl font-bold text-gray-900">
-                          {matches.filter(m => m.status === 'accepted').length}
+                          {matches.filter((m: any) => m.status === 'accepted').length}
                         </div>
                         <div className="text-gray-600">ตอบรับแล้ว</div>
                       </div>
@@ -321,7 +321,7 @@ const CustomerDetailPage: React.FC = () => {
                           <Clock className="h-8 w-8 text-yellow-600" />
                         </div>
                         <div className="text-2xl font-bold text-gray-900">
-                          {matches.filter(m => m.status === 'pending').length}
+                          {matches.filter((m: any) => m.status === 'pending').length}
                         </div>
                         <div className="text-gray-600">รอการตอบกลับ</div>
                       </div>
@@ -482,7 +482,7 @@ const CustomerDetailPage: React.FC = () => {
                       </div>
                     )}
 
-                    {matches.filter(m => m.response_date).map((match: JobMatch) => (
+                    {matches.filter((m: any) => m.response_date).map((match: JobMatch) => (
                       <div key={match.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center mb-2">
                           {getStatusIcon(match.status)}

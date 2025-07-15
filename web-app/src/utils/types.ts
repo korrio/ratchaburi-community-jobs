@@ -149,6 +149,22 @@ export interface ProviderFormData {
   is_active: boolean;
 }
 
+export interface ProviderFormErrors {
+  name?: string;
+  phone?: string;
+  line_id?: string;
+  service_category_id?: string;
+  location?: string;
+  district?: string;
+  subdistrict?: string;
+  province?: string;
+  description?: string;
+  price_range?: string;
+  available_days?: string;
+  available_hours?: string;
+  is_active?: string;
+}
+
 export interface CustomerFormData {
   name: string;
   phone: string;
@@ -163,6 +179,22 @@ export interface CustomerFormData {
   urgency_level: 'low' | 'medium' | 'high';
   preferred_contact: 'phone' | 'line' | 'both';
   is_active: boolean;
+}
+
+export interface CustomerFormErrors {
+  name?: string;
+  phone?: string;
+  line_id?: string;
+  location?: string;
+  district?: string;
+  subdistrict?: string;
+  province?: string;
+  service_category_id?: string;
+  job_description?: string;
+  budget_range?: string;
+  urgency_level?: string;
+  preferred_contact?: string;
+  is_active?: string;
 }
 
 export interface MatchStatusUpdateData {

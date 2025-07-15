@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { apiEndpoints } from '@/utils/api';
+import { ServiceProvider, Customer, JobMatch, ServiceCategory } from '@/utils/types';
 
 const AdminStats: React.FC = () => {
   const [dateRange, setDateRange] = useState('30'); // days
@@ -66,52 +67,52 @@ const AdminStats: React.FC = () => {
 
   // Calculate additional statistics
   const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.is_active).length;
+  const activeProviders = providers.filter((p: ServiceProvider) => p.is_active).length;
   const totalCustomers = customers.length;
-  const activeCustomers = customers.filter(c => c.is_active).length;
+  const activeCustomers = customers.filter((c: Customer) => c.is_active).length;
   const totalMatches = matches.length;
 
   // Match status distribution
   const matchStatusDistribution = {
-    pending: matches.filter(m => m.status === 'pending').length,
-    accepted: matches.filter(m => m.status === 'accepted').length,
-    completed: matches.filter(m => m.status === 'completed').length,
-    rejected: matches.filter(m => m.status === 'rejected').length,
-    cancelled: matches.filter(m => m.status === 'cancelled').length
+    pending: matches.filter((m: JobMatch) => m.status === 'pending').length,
+    accepted: matches.filter((m: JobMatch) => m.status === 'accepted').length,
+    completed: matches.filter((m: JobMatch) => m.status === 'completed').length,
+    rejected: matches.filter((m: JobMatch) => m.status === 'rejected').length,
+    cancelled: matches.filter((m: JobMatch) => m.status === 'cancelled').length
   };
 
   // Category distribution
-  const categoryStats = categories.map(category => ({
+  const categoryStats = categories.map((category: ServiceCategory) => ({
     ...category,
-    providers: providers.filter(p => p.service_category_id === category.id).length,
-    customers: customers.filter(c => c.service_category_id === category.id).length,
-    matches: matches.filter(m => m.category_name === category.name).length
+    providers: providers.filter((p: ServiceProvider) => p.service_category_id === category.id).length,
+    customers: customers.filter((c: Customer) => c.service_category_id === category.id).length,
+    matches: matches.filter((m: JobMatch) => m.category_name === category.name).length
   }));
 
   // District distribution
-  const districtStats = [...new Set(providers.map(p => p.district))].map(district => ({
+  const districtStats = Array.from(new Set(providers.map((p: ServiceProvider) => p.district)) as Set<string>).map((district: string) => ({
     district,
-    providers: providers.filter(p => p.district === district).length,
-    customers: customers.filter(c => c.district === district).length,
-    matches: matches.filter(m => m.provider_district === district || m.customer_district === district).length
+    providers: providers.filter((p: ServiceProvider) => p.district === district).length,
+    customers: customers.filter((c: Customer) => c.district === district).length,
+    matches: matches.filter((m: JobMatch) => m.provider_district === district || m.customer_district === district).length
   }));
 
   // Rating distribution
   const ratingDistribution = {
-    1: matches.filter(m => m.rating === 1).length,
-    2: matches.filter(m => m.rating === 2).length,
-    3: matches.filter(m => m.rating === 3).length,
-    4: matches.filter(m => m.rating === 4).length,
-    5: matches.filter(m => m.rating === 5).length
+    1: matches.filter((m: JobMatch) => m.rating === 1).length,
+    2: matches.filter((m: JobMatch) => m.rating === 2).length,
+    3: matches.filter((m: JobMatch) => m.rating === 3).length,
+    4: matches.filter((m: JobMatch) => m.rating === 4).length,
+    5: matches.filter((m: JobMatch) => m.rating === 5).length
   };
 
   // Top performers
   const topProviders = providers
-    .sort((a, b) => b.rating - a.rating)
+    .sort((a: ServiceProvider, b: ServiceProvider) => b.rating - a.rating)
     .slice(0, 10);
 
   const topCustomers = customers
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort((a: Customer, b: Customer) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 10);
 
   const handleExport = () => {
@@ -431,8 +432,8 @@ const AdminStats: React.FC = () => {
                       <div 
                         className="bg-yellow-600 h-2 rounded-full"
                         style={{ 
-                          width: `${matches.filter(m => m.rating).length > 0 ? 
-                            (ratingDistribution[rating as keyof typeof ratingDistribution] / matches.filter(m => m.rating).length) * 100 : 0}%` 
+                          width: `${matches.filter((m: JobMatch) => m.rating).length > 0 ? 
+                            (ratingDistribution[rating as keyof typeof ratingDistribution] / matches.filter((m: JobMatch) => m.rating).length) * 100 : 0}%` 
                         }}
                       />
                     </div>
@@ -471,7 +472,7 @@ const AdminStats: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {categoryStats.map((category) => (
+                {categoryStats.map((category: any) => (
                   <tr key={category.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
@@ -490,7 +491,7 @@ const AdminStats: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {category.matches > 0 ? 
-                          ((matches.filter(m => m.category_name === category.name && m.status === 'completed').length / category.matches) * 100).toFixed(1) : 0}%
+                          ((matches.filter((m: JobMatch) => m.category_name === category.name && m.status === 'completed').length / category.matches) * 100).toFixed(1) : 0}%
                       </div>
                     </td>
                   </tr>
@@ -553,7 +554,7 @@ const AdminStats: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">ผู้ให้บริการยอดเยี่ยม</h3>
             <div className="space-y-3">
-              {topProviders.slice(0, 5).map((provider, index) => (
+              {topProviders.slice(0, 5).map((provider: ServiceProvider, index: number) => (
                 <div key={provider.id} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -578,7 +579,7 @@ const AdminStats: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">ลูกค้าใหม่ล่าสุด</h3>
             <div className="space-y-3">
-              {topCustomers.slice(0, 5).map((customer, index) => (
+              {topCustomers.slice(0, 5).map((customer: Customer, index: number) => (
                 <div key={customer.id} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">

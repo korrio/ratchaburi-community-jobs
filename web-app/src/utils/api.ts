@@ -51,6 +51,9 @@ export const apiEndpoints = {
   
   // Service categories
   getCategories: () => api.get('/providers/categories'),
+  createCategory: (data: any) => api.post('/providers/categories', data),
+  updateCategory: (id: string, data: any) => api.put(`/providers/categories/${id}`, data),
+  deleteCategory: (id: string) => api.delete(`/providers/categories/${id}`),
   
   // Customers
   getCustomers: (params?: any) => api.get('/customers', { params }),

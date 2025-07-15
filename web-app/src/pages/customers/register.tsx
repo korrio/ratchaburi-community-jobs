@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { apiEndpoints } from '@/utils/api';
-import { CustomerFormData, ServiceCategory } from '@/utils/types';
+import { CustomerFormData, CustomerFormErrors, ServiceCategory } from '@/utils/types';
 import { DISTRICTS, SUBDISTRICTS, URGENCY_LEVELS, CONTACT_METHODS } from '@/utils/types';
 
 const CustomerRegisterPage: React.FC = () => {
@@ -37,7 +37,7 @@ const CustomerRegisterPage: React.FC = () => {
     is_active: true
   });
 
-  const [errors, setErrors] = useState<Partial<CustomerFormData>>({});
+  const [errors, setErrors] = useState<CustomerFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch categories for dropdown
@@ -73,7 +73,7 @@ const CustomerRegisterPage: React.FC = () => {
     }));
 
     // Clear error when user starts typing
-    if (errors[name as keyof CustomerFormData]) {
+    if (errors[name as keyof CustomerFormErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: undefined
@@ -91,7 +91,7 @@ const CustomerRegisterPage: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<CustomerFormData> = {};
+    const newErrors: CustomerFormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'กรุณากรอกชื่อ';

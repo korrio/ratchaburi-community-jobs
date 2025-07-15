@@ -257,7 +257,7 @@ const AdminMatches: React.FC = () => {
               <div className="ml-5">
                 <p className="text-sm font-medium text-gray-500">รอการตอบกลับ</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {matches.filter(m => m.status === 'pending').length}
+                  {matches.filter((m: JobMatch) => m.status === 'pending').length}
                 </p>
               </div>
             </div>
@@ -270,7 +270,7 @@ const AdminMatches: React.FC = () => {
               <div className="ml-5">
                 <p className="text-sm font-medium text-gray-500">สำเร็จ</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {matches.filter(m => m.status === 'completed').length}
+                  {matches.filter((m: JobMatch) => m.status === 'completed').length}
                 </p>
               </div>
             </div>
@@ -752,7 +752,7 @@ const AdminMatches: React.FC = () => {
       {selectedMatch && (
         <ProviderQuestionnaire
           matchId={selectedMatch.id.toString()}
-          customerName={selectedMatch.customer_name}
+          customerName={selectedMatch.customer_name || ''}
           jobDescription={selectedMatch.job_description || ''}
           isOpen={isProviderQuestionnaireOpen}
           onClose={() => {
@@ -771,9 +771,9 @@ const AdminMatches: React.FC = () => {
       {selectedMatch && (
         <CustomerQuestionnaire
           matchId={selectedMatch.id.toString()}
-          providerName={selectedMatch.provider_name}
+          providerName={selectedMatch.provider_name || ''}
           jobDescription={selectedMatch.job_description || ''}
-          serviceCategory={selectedMatch.category_name}
+          serviceCategory={selectedMatch.category_name || ''}
           isOpen={isCustomerQuestionnaireOpen}
           onClose={() => {
             setIsCustomerQuestionnaireOpen(false);

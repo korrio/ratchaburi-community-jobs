@@ -30,7 +30,7 @@ const ProviderDetailPage: React.FC = () => {
   // Fetch provider details
   const { data: providerData, isLoading: isLoadingProvider, error: providerError } = useQuery(
     ['provider', id],
-    () => apiEndpoints.getProvider(Number(id)),
+    () => apiEndpoints.getProvider(id as string),
     { enabled: !!id }
   );
 
@@ -296,7 +296,7 @@ const ProviderDetailPage: React.FC = () => {
                         <CheckCircle className="h-8 w-8 text-green-600" />
                       </div>
                       <div className="text-2xl font-bold text-gray-900">
-                        {matches.filter(m => m.status === 'completed').length}
+                        {matches.filter((m: any) => m.status === 'completed').length}
                       </div>
                       <div className="text-gray-600">งานสำเร็จ</div>
                     </div>
@@ -375,13 +375,13 @@ const ProviderDetailPage: React.FC = () => {
 
                 {activeTab === 'reviews' && (
                   <div className="space-y-4">
-                    {matches.filter(m => m.rating && m.feedback).length === 0 ? (
+                    {matches.filter((m: any) => m.rating && m.feedback).length === 0 ? (
                       <div className="text-center py-8">
                         <p className="text-gray-500">ยังไม่มีรีวิว</p>
                       </div>
                     ) : (
                       matches
-                        .filter(m => m.rating && m.feedback)
+                        .filter((m: any) => m.rating && m.feedback)
                         .map((match: JobMatch) => (
                           <div key={match.id} className="border border-gray-200 rounded-lg p-4">
                             <div className="flex items-start justify-between mb-3">
@@ -463,7 +463,7 @@ const ProviderDetailPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">งานสำเร็จ</span>
                   <span className="font-medium">
-                    {matches.filter(m => m.status === 'completed').length}
+                    {matches.filter((m: any) => m.status === 'completed').length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

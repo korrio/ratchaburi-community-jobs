@@ -82,7 +82,7 @@ const MatchesPage: React.FC = () => {
     
     // Update URL
     const query = Object.entries(newFilters)
-      .filter(([_, v]) => v !== undefined && v !== '')
+      .filter(([_, v]) => v !== undefined && String(v) !== '')
       .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
     
     router.push({ pathname: '/matches', query }, undefined, { shallow: true });

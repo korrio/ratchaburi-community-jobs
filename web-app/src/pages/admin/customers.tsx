@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { apiEndpoints } from '@/utils/api';
-import { Customer, CustomerFormData, ServiceCategory } from '@/utils/types';
+import { Customer, CustomerFormData, CustomerFormErrors, ServiceCategory } from '@/utils/types';
 import { DISTRICTS, SUBDISTRICTS, URGENCY_LEVELS, CONTACT_METHODS } from '@/utils/types';
 
 const AdminCustomers: React.FC = () => {
@@ -53,7 +53,7 @@ const AdminCustomers: React.FC = () => {
     is_active: true
   });
 
-  const [formErrors, setFormErrors] = useState<Partial<CustomerFormData>>({});
+  const [formErrors, setFormErrors] = useState<CustomerFormErrors>({});
 
   // Fetch customers
   const { data: customersData, isLoading } = useQuery(
@@ -147,7 +147,7 @@ const AdminCustomers: React.FC = () => {
     }));
 
     // Clear error when user starts typing
-    if (formErrors[name as keyof CustomerFormData]) {
+    if (formErrors[name as keyof CustomerFormErrors]) {
       setFormErrors(prev => ({
         ...prev,
         [name]: undefined
@@ -165,7 +165,7 @@ const AdminCustomers: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<CustomerFormData> = {};
+    const newErrors: CustomerFormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'กรุณากรอกชื่อ';
