@@ -17,6 +17,7 @@ const customerRoutes = require('./routes/customers');
 const matchRoutes = require('./routes/matches');
 const authRoutes = require('./routes/auth');
 const seedRoutes = require('./routes/seed');
+const questionnaireRoutes = require('./routes/questionnaires');
 
 // Initialize express app
 const app = express();
@@ -79,6 +80,9 @@ app.use('/api/seed', seedRoutes);
 
 // Auto-match endpoint
 app.get('/api/auto-matches', require('./controllers/matchController').getAutoMatches);
+
+// Questionnaire stats endpoint
+app.use('/api/questionnaires', questionnaireRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

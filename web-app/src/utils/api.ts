@@ -73,6 +73,13 @@ export const apiEndpoints = {
   
   // Database seeding
   seedDatabase: () => api.post('/seed'),
+  
+  // Questionnaires
+  submitProviderQuestionnaire: (matchId: string, data: any) => api.post(`/matches/${matchId}/provider-questionnaire`, data),
+  submitCustomerQuestionnaire: (matchId: string, data: any) => api.post(`/matches/${matchId}/customer-questionnaire`, data),
+  getProviderQuestionnaire: (matchId: string) => api.get(`/matches/${matchId}/provider-questionnaire`),
+  getCustomerQuestionnaire: (matchId: string) => api.get(`/matches/${matchId}/customer-questionnaire`),
+  getQuestionnaireStats: () => api.get('/questionnaires/stats'),
 };
 
 export default api;

@@ -277,4 +277,162 @@ router.post('/', matchController.createMatch);
  */
 router.put('/:id/status', matchController.updateMatchStatus);
 
+// Import questionnaire routes
+const questionnaireRoutes = require('./questionnaires');
+
+/**
+ * @swagger
+ * /api/matches/{id}/provider-questionnaire:
+ *   post:
+ *     summary: Submit provider questionnaire
+ *     tags: [Questionnaires]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Match ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               payment_received:
+ *                 type: boolean
+ *               payment_amount:
+ *                 type: number
+ *               payment_method:
+ *                 type: string
+ *               job_completion_date:
+ *                 type: string
+ *                 format: date
+ *               actual_hours_worked:
+ *                 type: number
+ *               difficulty_level:
+ *                 type: string
+ *                 enum: [easy, medium, hard]
+ *               customer_satisfaction:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               would_work_again:
+ *                 type: boolean
+ *               additional_services_offered:
+ *                 type: string
+ *               challenges_faced:
+ *                 type: string
+ *               suggestions_for_improvement:
+ *                 type: string
+ *               overall_experience:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               recommendation_likelihood:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               feedback_for_platform:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Questionnaire submitted successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Match not found
+ */
+
+/**
+ * @swagger
+ * /api/matches/{id}/customer-questionnaire:
+ *   post:
+ *     summary: Submit customer questionnaire
+ *     tags: [Questionnaires]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Match ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               service_rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               service_quality:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               timeliness:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               communication:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               professionalism:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               value_for_money:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               overall_satisfaction:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               would_recommend:
+ *                 type: boolean
+ *               would_hire_again:
+ *                 type: boolean
+ *               completion_time:
+ *                 type: string
+ *                 enum: [faster, on_time, slower]
+ *               price_fairness:
+ *                 type: string
+ *                 enum: [cheap, fair, expensive]
+ *               service_exceeded_expectations:
+ *                 type: boolean
+ *               positive_feedback:
+ *                 type: string
+ *               areas_for_improvement:
+ *                 type: string
+ *               additional_services_received:
+ *                 type: string
+ *               problems_encountered:
+ *                 type: string
+ *               recommendation_reason:
+ *                 type: string
+ *               overall_experience_description:
+ *                 type: string
+ *               favorite_aspect:
+ *                 type: string
+ *               suggestion_for_provider:
+ *                 type: string
+ *               platform_feedback:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Questionnaire submitted successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Match not found
+ */
+
+// Mount questionnaire routes
+router.use('/', questionnaireRoutes);
+
 module.exports = router;

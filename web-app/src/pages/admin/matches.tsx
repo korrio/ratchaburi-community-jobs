@@ -24,6 +24,8 @@ import {
   BarChart3
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
+import ProviderQuestionnaire from '@/components/ProviderQuestionnaire';
+import CustomerQuestionnaire from '@/components/CustomerQuestionnaire';
 import { apiEndpoints } from '@/utils/api';
 import { JobMatch, ServiceCategory, MatchStatusUpdateData } from '@/utils/types';
 import { MATCH_STATUSES } from '@/utils/types';
@@ -36,6 +38,8 @@ const AdminMatches: React.FC = () => {
   const [selectedMatch, setSelectedMatch] = useState<JobMatch | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isProviderQuestionnaireOpen, setIsProviderQuestionnaireOpen] = useState(false);
+  const [isCustomerQuestionnaireOpen, setIsCustomerQuestionnaireOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<'match_date' | 'match_score' | 'response_date'>('match_date');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
@@ -90,11 +94,23 @@ const AdminMatches: React.FC = () => {
   const updateMatchMutation = useMutation(
     ({ id, data }: { id: string; data: MatchStatusUpdateData }) => apiEndpoints.updateMatchStatus(id, data),
     {
-      onSuccess: () => {
+      onSuccess: (response, variables) => {
         queryClient.invalidateQueries('admin-matches');
         setIsModalOpen(false);
-        setSelectedMatch(null);
-        resetUpdateData();
+        
+        // Trigger questionnaires when job is completed
+        if (variables.data.status === 'completed') {
+          // Show questionnaire modals after a brief delay
+          setTimeout(() => {
+            setIsProviderQuestionnaireOpen(true);
+          }, 500);
+          setTimeout(() => {
+            setIsCustomerQuestionnaireOpen(true);
+          }, 1000);
+        } else {
+          setSelectedMatch(null);
+          resetUpdateData();
+        }
       }
     }
   );
@@ -729,6 +745,45 @@ const AdminMatches: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Provider Questionnaire */}
+      {selectedMatch && (
+        <ProviderQuestionnaire
+          matchId={selectedMatch.id.toString()}
+          customerName={selectedMatch.customer_name}
+          jobDescription={selectedMatch.job_description || ''}
+          isOpen={isProviderQuestionnaireOpen}
+          onClose={() => {
+            setIsProviderQuestionnaireOpen(false);
+            setSelectedMatch(null);
+            resetUpdateData();
+          }}
+          onSubmit={() => {
+            // Questionnaire submitted successfully
+            console.log('Provider questionnaire submitted');
+          }}
+        />
+      )}
+
+      {/* Customer Questionnaire */}
+      {selectedMatch && (
+        <CustomerQuestionnaire
+          matchId={selectedMatch.id.toString()}
+          providerName={selectedMatch.provider_name}
+          jobDescription={selectedMatch.job_description || ''}
+          serviceCategory={selectedMatch.category_name}
+          isOpen={isCustomerQuestionnaireOpen}
+          onClose={() => {
+            setIsCustomerQuestionnaireOpen(false);
+            setSelectedMatch(null);
+            resetUpdateData();
+          }}
+          onSubmit={() => {
+            // Questionnaire submitted successfully
+            console.log('Customer questionnaire submitted');
+          }}
+        />
       )}
     </AdminLayout>
   );
