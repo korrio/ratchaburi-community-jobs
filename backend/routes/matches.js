@@ -127,6 +127,53 @@ router.get('/', matchController.getMatches);
 
 /**
  * @swagger
+ * /api/matches/stats:
+ *   get:
+ *     summary: Get match statistics
+ *     tags: [Matches]
+ *     responses:
+ *       200:
+ *         description: Match statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     total_matches:
+ *                       type: integer
+ *                     pending_matches:
+ *                       type: integer
+ *                     accepted_matches:
+ *                       type: integer
+ *                     completed_matches:
+ *                       type: integer
+ *                     rejected_matches:
+ *                       type: integer
+ *                     avg_match_score:
+ *                       type: number
+ *                     avg_rating:
+ *                       type: number
+ *                     top_categories:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           icon:
+ *                             type: string
+ *                           match_count:
+ *                             type: integer
+ */
+router.get('/stats', matchController.getMatchStats);
+
+/**
+ * @swagger
  * /api/matches/{id}:
  *   get:
  *     summary: Get match by ID
@@ -229,52 +276,5 @@ router.post('/', matchController.createMatch);
  *         description: Match not found
  */
 router.put('/:id/status', matchController.updateMatchStatus);
-
-/**
- * @swagger
- * /api/matches/stats:
- *   get:
- *     summary: Get match statistics
- *     tags: [Matches]
- *     responses:
- *       200:
- *         description: Match statistics
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: object
- *                   properties:
- *                     total_matches:
- *                       type: integer
- *                     pending_matches:
- *                       type: integer
- *                     accepted_matches:
- *                       type: integer
- *                     completed_matches:
- *                       type: integer
- *                     rejected_matches:
- *                       type: integer
- *                     avg_match_score:
- *                       type: number
- *                     avg_rating:
- *                       type: number
- *                     top_categories:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           name:
- *                             type: string
- *                           icon:
- *                             type: string
- *                           match_count:
- *                             type: integer
- */
-router.get('/stats', matchController.getMatchStats);
 
 module.exports = router;

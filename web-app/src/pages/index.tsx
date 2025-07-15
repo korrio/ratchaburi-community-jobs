@@ -269,7 +269,7 @@ const HomePage: React.FC = () => {
                   </div>
                   {customer.budget_range && (
                     <div className="text-sm text-gray-600">
-                      ง예산: {customer.budget_range}
+                      ค่าจ้าง: {customer.budget_range}
                     </div>
                   )}
                 </div>

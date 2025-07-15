@@ -148,6 +148,38 @@ router.get('/', providerController.getProviders);
 
 /**
  * @swagger
+ * /api/providers/categories:
+ *   get:
+ *     summary: Get all service categories
+ *     tags: [Providers]
+ *     responses:
+ *       200:
+ *         description: List of service categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       icon:
+ *                         type: string
+ */
+router.get('/categories', providerController.getCategories);
+
+/**
+ * @swagger
  * /api/providers/{id}:
  *   get:
  *     summary: Get provider by ID
@@ -245,37 +277,5 @@ router.put('/:id', providerController.updateProvider);
  *         description: Provider not found
  */
 router.delete('/:id', providerController.deleteProvider);
-
-/**
- * @swagger
- * /api/providers/categories:
- *   get:
- *     summary: Get all service categories
- *     tags: [Providers]
- *     responses:
- *       200:
- *         description: List of service categories
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       name:
- *                         type: string
- *                       description:
- *                         type: string
- *                       icon:
- *                         type: string
- */
-router.get('/categories', providerController.getCategories);
 
 module.exports = router;
