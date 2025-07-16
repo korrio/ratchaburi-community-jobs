@@ -26,8 +26,8 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
-  title = 'ราชบุรีงานชุมชน',
-  description = 'แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี'
+  title = 'JOB ชุมชน',
+  description = 'แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชน'
 }) => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({
                     <span className="text-white font-bold text-sm">ร</span>
                   </div>
                   <span className="ml-2 text-xl font-bold text-gray-900">
-                    ราชบุรีงานชุมชน
+                    JOB ชุมชน
                   </span>
                 </Link>
               </div>
@@ -181,13 +181,20 @@ const Layout: React.FC<LayoutProps> = ({
                     <span className="text-white font-bold text-sm">ร</span>
                   </div>
                   <span className="ml-2 text-xl font-bold">
-                    ราชบุรีงานชุมชน
+                    JOB ชุมชน
                   </span>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี 
+                  แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชน 
                   เพื่อสร้างโอกาสการจ้างงานและการเข้าถึงบริการที่ดีขึ้น
                 </p>
+                <div className="mt-4">
+                  <img 
+                    src="https://www.eef.or.th/wp-content/uploads/2020/09/th-logo-eef-1400x621.png" 
+                    alt="กองทุนเพื่อความเสมอภาคทางการศึกษา" 
+                    className="h-24 w-auto opacity-80 hover:opacity-100 transition-opacity"
+                  />
+                </div>
               </div>
               
               <div>
@@ -215,13 +222,16 @@ const Layout: React.FC<LayoutProps> = ({
                   </div>
                   <div className="flex items-center text-gray-400">
                     <Mail className="h-4 w-4 mr-2" />
-                    <span>support@ratchaburicommunity.co.th</span>
+                    <span>support@jobforcommunity.com</span>
                   </div>
                   <div className="flex items-start text-gray-400">
                     <MapPin className="h-4 w-4 mr-2 mt-1" />
                     <span>
-                      ศูนย์จัดการแรงงานระดับพื้นที่ตำบลแพงพวย<br />
-                      อำเภอดำเนินสะดวก จังหวัดราชบุรี
+                      กองทุนเพื่อความเสมอภาคทางการศึกษา<br />
+                      อาคารเอส. พี. (อาคารเอ) ชั้น 13
+เลขที่ 388 ถนนพหลโยธิน
+แขวงสามเสนใน เขตพญาไท
+กรุงเทพมหานคร 10400
                     </span>
                   </div>
                 </div>
@@ -231,10 +241,10 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="border-t border-gray-800 mt-8 pt-8">
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <p className="text-gray-400 text-sm">
-                  © 2024 ราชบุรีงานชุมชน. สงวนลิขสิทธิ์.
+                  © 2025 JOB ชุมชน. ลิขสิทธิ์ของกองทุนเพื่อความเสมอภาคทางการศึกษา.
                 </p>
                 <p className="text-gray-400 text-sm mt-2 md:mt-0">
-                  พัฒนาโดยศูนย์จัดการแรงงานระดับพื้นที่ตำบลแพงพวย
+                  พัฒนาโดยกองทุนเพื่อความเสมอภาคทางการศึกษา
                 </p>
               </div>
             </div>

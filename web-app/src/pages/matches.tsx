@@ -151,7 +151,7 @@ const MatchesPage: React.FC = () => {
   };
 
   return (
-    <Layout title="การจับคู่งาน - ราชบุรีงานชุมชน">
+    <Layout title="การจับคู่งาน - JOB ชุมชน">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

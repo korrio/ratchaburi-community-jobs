@@ -34,8 +34,8 @@ const AdminSettings: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | null>(null);
 
   const [generalSettings, setGeneralSettings] = useState({
-    site_name: 'ราชบุรีงานชุมชน',
-    site_description: 'แพลตฟอร์มจับคู่งานชุมชนราชบุรี',
+    site_name: 'JOB ชุมชน',
+    site_description: 'แพลตฟอร์มจับคู่งานชุมชน',
     contact_email: 'support@ratchaburicommunity.co.th',
     contact_phone: '032-XXX-XXXX',
     auto_match_enabled: true,

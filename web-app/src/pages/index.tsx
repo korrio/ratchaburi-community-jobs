@@ -51,13 +51,13 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <Layout title="ราชบุรีงานชุมชน - แพลตฟอร์มจับคู่งานชุมชน">
+    <Layout title="JOB ชุมชน - แพลตฟอร์มจับคู่งานชุมชน">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              ราชบุรีงานชุมชน
+              JOB ชุมชน
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-primary-100">
               เชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี

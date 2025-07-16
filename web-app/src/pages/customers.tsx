@@ -112,7 +112,7 @@ const CustomersPage: React.FC = () => {
   };
 
   return (
-    <Layout title="งานที่ต้องการจ้าง - ราชบุรีงานชุมชน">
+    <Layout title="งานที่ต้องการจ้าง - JOB ชุมชน">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

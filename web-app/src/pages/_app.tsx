@@ -20,7 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>ราชบุรีงานชุมชน - แพลตฟอร์มจับคู่งานชุมชน</title>
+        <title>JOB ชุมชน - แพลตฟอร์มจับคู่งานชุมชน</title>
         <meta name="description" content="แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี" />
         <meta name="keywords" content="ราชบุรี, งานชุมชน, จับคู่งาน, ผู้ให้บริการ, ช่าง, บริการ" />
         <meta name="author" content="ศูนย์จัดการแรงงานระดับพื้นที่ตำบลแพงพวย" />
@@ -30,14 +30,14 @@ export default function App({ Component, pageProps }: AppProps) {
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://ratchaburi-community-jobs.vercel.app/" />
-        <meta property="og:title" content="ราชบุรีงานชุมชน - แพลตฟอร์มจับคู่งานชุมชน" />
+        <meta property="og:title" content="JOB ชุมชน - แพลตฟอร์มจับคู่งานชุมชน" />
         <meta property="og:description" content="แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี" />
         <meta property="og:image" content="/og-image.jpg" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://ratchaburi-community-jobs.vercel.app/" />
-        <meta name="twitter:title" content="ราชบุรีงานชุมชน - แพลตฟอร์มจับคู่งานชุมชน" />
+        <meta name="twitter:title" content="JOB ชุมชน - แพลตฟอร์มจับคู่งานชุมชน" />
         <meta name="twitter:description" content="แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี" />
         <meta name="twitter:image" content="/og-image.jpg" />
         

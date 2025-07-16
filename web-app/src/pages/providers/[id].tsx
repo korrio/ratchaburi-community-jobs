@@ -46,7 +46,7 @@ const ProviderDetailPage: React.FC = () => {
 
   if (isLoadingProvider) {
     return (
-      <Layout title="กำลังโหลด... - ราชบุรีงานชุมชน">
+      <Layout title="กำลังโหลด... - JOB ชุมชน">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/2 mb-6"></div>
@@ -64,7 +64,7 @@ const ProviderDetailPage: React.FC = () => {
 
   if (providerError || !provider) {
     return (
-      <Layout title="ไม่พบข้อมูล - ราชบุรีงานชุมชน">
+      <Layout title="ไม่พบข้อมูล - JOB ชุมชน">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
@@ -120,7 +120,7 @@ const ProviderDetailPage: React.FC = () => {
   };
 
   return (
-    <Layout title={`${provider.name} - ราชบุรีงานชุมชน`}>
+    <Layout title={`${provider.name} - JOB ชุมชน`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <button

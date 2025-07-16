@@ -92,7 +92,7 @@ const ProvidersPage: React.FC = () => {
   };
 
   return (
-    <Layout title="ผู้ให้บริการ - ราชบุรีงานชุมชน">
+    <Layout title="ผู้ให้บริการ - JOB ชุมชน">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
