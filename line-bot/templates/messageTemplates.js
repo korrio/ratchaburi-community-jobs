@@ -7,13 +7,13 @@ class MessageTemplates {
       altText: 'ยินดีต้อนรับสู่ราชบุรีงานชุมชน',
       contents: {
         type: 'bubble',
-        hero: {
-          type: 'image',
-          url: 'https://via.placeholder.com/1040x585/0ea5e9/ffffff?text=ราชบุรีงานชุมชน',
-          size: 'full',
-          aspectRatio: '20:13',
-          aspectMode: 'cover'
-        },
+        // hero: {
+        //   type: 'image',
+        //   url: 'https://placehold.co/1040x585/0ea5e9/ffffff?text=ratchaburi%20community',
+        //   size: 'full',
+        //   aspectRatio: '20:13',
+        //   aspectMode: 'cover'
+        // },
         body: {
           type: 'box',
           layout: 'vertical',
@@ -177,7 +177,7 @@ class MessageTemplates {
       type: 'bubble',
       hero: {
         type: 'image',
-        url: 'https://via.placeholder.com/1040x585/f1f5f9/334155?text=' + encodeURIComponent(provider.category_icon || '🔧'),
+        url: 'https://placehold.co/1040x585/f1f5f9/334155?text=avatar',
         size: 'full',
         aspectRatio: '20:13',
         aspectMode: 'cover'
@@ -269,7 +269,7 @@ class MessageTemplates {
       type: 'bubble',
       hero: {
         type: 'image',
-        url: 'https://via.placeholder.com/1040x585/fef3c7/92400e?text=' + encodeURIComponent(customer.category_icon || '💼'),
+        url: 'https://placehold.co/1040x585/fef3c7/92400e?text=JOB',
         size: 'full',
         aspectRatio: '20:13',
         aspectMode: 'cover'
