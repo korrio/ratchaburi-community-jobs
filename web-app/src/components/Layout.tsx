@@ -33,10 +33,10 @@ const Layout: React.FC<LayoutProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'หน้าแรก', href: '/', icon: Home },
+    // { name: 'หน้าแรก', href: '/', icon: Home },
     { name: 'ผู้ให้บริการ', href: '/providers', icon: UserCheck },
     { name: 'ผู้ต้องการจ้าง', href: '/customers', icon: Users },
-    { name: 'การจับคู่งาน', href: '/matches', icon: GitMerge },
+    // { name: 'การจับคู่งาน', href: '/matches', icon: GitMerge },
     { name: 'ลงทะเบียนผู้ให้บริการ', href: '/providers/register', icon: UserPlus },
     { name: 'โพสต์งานที่ต้องการจ้าง', href: '/customers/register', icon: PlusCircle },
   ];
@@ -75,6 +75,21 @@ const Layout: React.FC<LayoutProps> = ({
               <div className="hidden md:flex items-center space-x-8">
                 {navigation.map((item) => {
                   const Icon = item.icon;
+                  const isPostJobButton = item.name === 'โพสต์งานที่ต้องการจ้าง';
+                  
+                  if (isPostJobButton) {
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors bg-primary-800 hover:bg-primary-900 text-white"
+                      >
+                        <Icon className="h-4 w-4 mr-2" />
+                        {item.name}
+                      </Link>
+                    );
+                  }
+                  
                   return (
                     <Link
                       key={item.name}
@@ -114,6 +129,22 @@ const Layout: React.FC<LayoutProps> = ({
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {navigation.map((item) => {
                   const Icon = item.icon;
+                  const isPostJobButton = item.name === 'โพสต์งานที่ต้องการจ้าง';
+                  
+                  if (isPostJobButton) {
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center px-4 py-3 rounded-md text-base font-medium transition-colors bg-primary-800 hover:bg-primary-900 text-white"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Icon className="h-5 w-5 mr-3" />
+                        {item.name}
+                      </Link>
+                    );
+                  }
+                  
                   return (
                     <Link
                       key={item.name}

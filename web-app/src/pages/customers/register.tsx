@@ -490,7 +490,7 @@ const CustomerRegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn btn-primary flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2"
             >
               {isSubmitting ? (
                 <>

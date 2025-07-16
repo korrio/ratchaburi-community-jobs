@@ -9,7 +9,10 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 // Load environment variables
+// Load .env first (base configuration)
 dotenv.config();
+// Load .env.local second (local overrides)
+dotenv.config({ path: '.env.local' });
 
 // Import routes
 const providerRoutes = require('./routes/providers');
@@ -55,8 +58,6 @@ app.use(morgan('combined'));
 app.use(cors({
   origin: process.env.FRONTEND_URL || [
     'http://localhost:3000', 
-    'http://localhost:3001',
-    'http://ratchaburi-community-jobs.vercel.app',
     'https://ratchaburi-community-jobs.vercel.app'
   ],
   credentials: true
