@@ -7,15 +7,18 @@ class MessageHandler {
   async handleTextMessage(event, client) {
     const userMessage = event.message.text.toLowerCase().trim();
     const replyToken = event.replyToken;
+    const userId = event.source.userId;
 
     // Command matching
     const commands = {
       'สวัสดี': () => this.sendWelcomeMessage(client, replyToken),
       'ค้นหาผู้ให้บริการ': () => this.searchProviders(client, replyToken),
-      'ค้นหางาน': () => this.searchJobs(client, replyToken),
+      'ค้นหางาน': () => this.searchJobs(client, replyToken, '', userId),
       'จับคู่งาน': () => this.autoMatch(client, replyToken),
       'ลงทะเบียนผู้ให้บริการ': () => this.registerProvider(client, replyToken),
       'ลงทะเบียนงาน': () => this.registerCustomer(client, replyToken),
+      'ดูงานของฉัน': () => this.viewMyJobs(client, replyToken, userId),
+      'งานของฉัน': () => this.viewMyJobs(client, replyToken, userId),
       'ช่วยเหลือ': () => this.sendHelpMessage(client, replyToken),
       'help': () => this.sendHelpMessage(client, replyToken),
       'เริ่มต้น': () => this.sendWelcomeMessage(client, replyToken),
@@ -33,7 +36,7 @@ class MessageHandler {
     }
 
     if (userMessage.includes('งาน') || userMessage.includes('จ้าง')) {
-      return this.searchJobs(client, replyToken, userMessage);
+      return this.searchJobs(client, replyToken, userMessage, userId);
     }
 
     if (userMessage.includes('ติดต่อ') || userMessage.includes('สอบถาม')) {
@@ -81,15 +84,35 @@ class MessageHandler {
     }
   }
 
-  async searchJobs(client, replyToken, query = '') {
+  async searchJobs(client, replyToken, query = '', userId = null) {
     try {
-      const response = await apiClient.get('/customers', {
-        params: {
-          limit: 5,
-          search: query,
-          sort_by: 'created_at',
-          order: 'DESC'
+      let searchParams = {
+        limit: 5,
+        search: query,
+        sort_by: 'created_at',
+        order: 'DESC'
+      };
+
+      // If userId provided, try to get provider's service category to filter relevant jobs
+      if (userId) {
+        try {
+          const providersResponse = await apiClient.get('/providers', {
+            params: { line_id: userId, limit: 1 }
+          });
+          
+          const providers = providersResponse.data.data;
+          
+          if (providers && providers.length > 0) {
+            const provider = providers[0];
+            searchParams.category_id = provider.service_category_id;
+          }
+        } catch (providerError) {
+          console.log('Provider not found, showing all jobs:', providerError.message);
         }
+      }
+
+      const response = await apiClient.get('/customers', {
+        params: searchParams
       });
 
       const customers = response.data.data;
@@ -97,7 +120,29 @@ class MessageHandler {
       if (customers.length === 0) {
         return client.replyMessage(replyToken, {
           type: 'text',
-          text: 'ไม่พบงานที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง'
+          text: query ? 
+            'ไม่พบงานที่ตรงกับคำค้นหา กรุณาลองใหม่อีกครั้ง' :
+            'ไม่มีงานใหม่ในขณะนี้ กรุณาลองใหม่อีกครั้งภายหลัง',
+          quickReply: {
+            items: [
+              {
+                type: 'action',
+                action: {
+                  type: 'postback',
+                  label: 'ดูงานทั้งหมด',
+                  data: 'action=search_all_jobs'
+                }
+              },
+              {
+                type: 'action',
+                action: {
+                  type: 'postback',
+                  label: 'เมนูหลัก',
+                  data: 'action=help'
+                }
+              }
+            ]
+          }
         });
       }
 
@@ -228,12 +273,84 @@ class MessageHandler {
     return client.replyMessage(replyToken, contactMessage);
   }
 
+  async viewMyJobs(client, replyToken, userId) {
+    try {
+      // Get provider info
+      const providersResponse = await apiClient.get('/providers', {
+        params: { line_id: userId, limit: 1 }
+      });
+      
+      const providers = providersResponse.data.data;
+      
+      if (!providers || providers.length === 0) {
+        return client.replyMessage(replyToken, {
+          type: 'text',
+          text: '❌ คุณยังไม่ได้ลงทะเบียนเป็นผู้ให้บริการ',
+          quickReply: {
+            items: [
+              {
+                type: 'action',
+                action: {
+                  type: 'postback',
+                  label: 'ลงทะเบียนผู้ให้บริการ',
+                  data: 'action=register_provider'
+                }
+              }
+            ]
+          }
+        });
+      }
+
+      const provider = providers[0];
+
+      // Get active jobs for this provider
+      const jobsResponse = await apiClient.get('/job-progress', {
+        params: {
+          provider_id: provider.id,
+          limit: 10
+        }
+      });
+
+      const jobs = jobsResponse.data.data;
+      
+      if (jobs.length === 0) {
+        return client.replyMessage(replyToken, {
+          type: 'text',
+          text: '📋 คุณยังไม่มีงานที่กำลังดำเนินการ',
+          quickReply: {
+            items: [
+              {
+                type: 'action',
+                action: {
+                  type: 'postback',
+                  label: 'ค้นหางานใหม่',
+                  data: 'action=search_jobs'
+                }
+              }
+            ]
+          }
+        });
+      }
+
+      const jobCarousel = templates.createMyJobsCarousel(jobs);
+      return client.replyMessage(replyToken, jobCarousel);
+
+    } catch (error) {
+      console.error('Error fetching my jobs:', error);
+      return client.replyMessage(replyToken, {
+        type: 'text',
+        text: 'ขออภัย เกิดข้อผิดพลาดในการดึงข้อมูลงาน กรุณาลองใหม่อีกครั้ง'
+      });
+    }
+  }
+
   async sendDefaultResponse(client, replyToken) {
     const message = {
       type: 'text',
       text: '🤖 ไม่เข้าใจคำสั่ง กรุณาเลือกจากเมนูด้านล่างหรือพิมพ์:\n\n' +
             '• "ค้นหาผู้ให้บริการ" - ค้นหาช่างและผู้ให้บริการ\n' +
             '• "ค้นหางาน" - ค้นหางานที่ต้องการจ้าง\n' +
+            '• "ดูงานของฉัน" - ดูงานที่กำลังดำเนินการ\n' +
             '• "จับคู่งาน" - ดูการจับคู่งานอัตโนมัติ\n' +
             '• "ลงทะเบียนผู้ให้บริการ" - ลงทะเบียนเป็นผู้ให้บริการ\n' +
             '• "ลงทะเบียนงาน" - โพสต์งานที่ต้องการจ้าง\n' +
@@ -260,8 +377,8 @@ class MessageHandler {
             type: 'action',
             action: {
               type: 'postback',
-              label: 'จับคู่งาน',
-              data: 'action=auto_match'
+              label: 'ดูงานของฉัน',
+              data: 'action=view_my_jobs'
             }
           },
           {

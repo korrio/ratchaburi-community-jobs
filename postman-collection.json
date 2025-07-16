@@ -1,0 +1,667 @@
+{
+  "info": {
+    "name": "Ratchaburi Community Jobs API",
+    "description": "Complete API collection for the Ratchaburi Community Jobs platform - A comprehensive job matching system for local services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check system health and status"
+          }
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api-docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api-docs"]
+            },
+            "description": "Access Swagger documentation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('token', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}"
+            },
+            "description": "Login with admin credentials (demo)"
+          }
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Verify JWT token validity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Providers",
+      "item": [
+        {
+          "name": "Get All Providers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers?page=1&limit=10&sort_by=rating&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "rating"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "district",
+                  "value": "ดำเนินสะดวก",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "ช่าง",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch all service providers with optional filtering"
+          }
+        },
+        {
+          "name": "Get Service Categories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "categories"]
+            },
+            "description": "Get all available service categories"
+          }
+        },
+        {
+          "name": "Get Provider by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "1"]
+            },
+            "description": "Get specific provider details"
+          }
+        },
+        {
+          "name": "Create Provider",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"สมชาย ช่างแอร์\",\n  \"phone\": \"081-234-5678\",\n  \"line_id\": \"somchai_aircon\",\n  \"service_category_id\": 1,\n  \"location\": \"123 หมู่ 2 ตำบลแพงพวย\",\n  \"district\": \"ดำเนินสะดวก\",\n  \"subdistrict\": \"แพงพวย\",\n  \"province\": \"ราชบุรี\",\n  \"description\": \"ซ่อมแอร์ บำรุงรักษา ติดตั้งเครื่องปรับอากาศ\",\n  \"price_range\": \"300-800 บาท\",\n  \"available_days\": \"จันทร์-เสาร์\",\n  \"available_hours\": \"08:00-17:00\",\n  \"is_active\": true\n}"
+            },
+            "description": "Create a new service provider"
+          }
+        },
+        {
+          "name": "Update Provider",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "1"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"สมชาย ช่างแอร์ (อัพเดท)\",\n  \"phone\": \"081-234-5678\",\n  \"price_range\": \"350-900 บาท\",\n  \"rating\": 4.5\n}"
+            },
+            "description": "Update existing provider information"
+          }
+        },
+        {
+          "name": "Delete Provider",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "1"]
+            },
+            "description": "Delete a provider (soft delete recommended)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/customers?page=1&limit=10&sort_by=created_at&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "district",
+                  "value": "ดำเนินสะดวก",
+                  "disabled": true
+                },
+                {
+                  "key": "urgency_level",
+                  "value": "high",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch all customers with optional filtering"
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "description": "Get specific customer details"
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"นางสาวสมหวัง ใจดี\",\n  \"phone\": \"082-345-6789\",\n  \"line_id\": \"somwang123\",\n  \"location\": \"456 หมู่ 3 ตำบลแพงพวย\",\n  \"district\": \"ดำเนินสะดวก\",\n  \"subdistrict\": \"แพงพวย\",\n  \"province\": \"ราชบุรี\",\n  \"service_category_id\": 1,\n  \"job_description\": \"ต้องการซ่อมแอร์บ้านที่ไม่เย็น มีเสียงดัง\",\n  \"budget_range\": \"500-1000 บาท\",\n  \"urgency_level\": \"high\",\n  \"preferred_contact\": \"phone\",\n  \"is_active\": true\n}"
+            },
+            "description": "Create a new customer job request"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_description\": \"ต้องการซ่อมแอร์บ้านที่ไม่เย็น มีเสียงดัง (อัพเดท)\",\n  \"budget_range\": \"600-1200 บาท\",\n  \"urgency_level\": \"medium\"\n}"
+            },
+            "description": "Update existing customer information"
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "description": "Delete a customer record"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Job Matching",
+      "item": [
+        {
+          "name": "Get All Matches",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches?page=1&limit=10&sort_by=match_score&order=DESC",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "match_score"
+                },
+                {
+                  "key": "order",
+                  "value": "DESC"
+                },
+                {
+                  "key": "provider_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "customer_id",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch all job matches with filtering options"
+          }
+        },
+        {
+          "name": "Get Auto Matches",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auto-matches?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auto-matches"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get AI-generated job matches with high compatibility scores"
+          }
+        },
+        {
+          "name": "Get Match Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "stats"]
+            },
+            "description": "Get comprehensive matching statistics and analytics"
+          }
+        },
+        {
+          "name": "Get Match by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1"]
+            },
+            "description": "Get detailed information about a specific match"
+          }
+        },
+        {
+          "name": "Create Manual Match",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider_id\": 1,\n  \"customer_id\": 1\n}"
+            },
+            "description": "Manually create a job match between provider and customer"
+          }
+        },
+        {
+          "name": "Accept Job (Update Status to Accepted)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "status"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\",\n  \"provider_response\": \"รับงานนี้ครับ สามารถไปทำงานได้ในวันพรุ่งนี้\"\n}"
+            },
+            "description": "Provider accepts a job - this is the รับงาน functionality"
+          }
+        },
+        {
+          "name": "Complete Job",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "status"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"rating\": 5,\n  \"feedback\": \"งานเสร็จเรียบร้อย ลูกค้าพอใจมาก\"\n}"
+            },
+            "description": "Mark job as completed with rating and feedback"
+          }
+        },
+        {
+          "name": "Reject Job",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "status"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\",\n  \"provider_response\": \"ขออภัยครับ ช่วงนี้งานเต็มแล้ว\"\n}"
+            },
+            "description": "Provider rejects a job offer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Questionnaires",
+      "item": [
+        {
+          "name": "Submit Provider Questionnaire",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/provider-questionnaire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "provider-questionnaire"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_received\": true,\n  \"payment_amount\": 800,\n  \"payment_method\": \"เงินสด\",\n  \"job_completion_date\": \"2024-01-15\",\n  \"actual_hours_worked\": 2.5,\n  \"difficulty_level\": \"medium\",\n  \"customer_satisfaction\": 5,\n  \"would_work_again\": true,\n  \"additional_services_offered\": \"ทำความสะอาดเครื่องปรับอากาศ\",\n  \"challenges_faced\": \"อุปกรณ์เก่า ต้องระวังการติดตั้ง\",\n  \"suggestions_for_improvement\": \"ควรมีข้อมูลรายละเอียดงานที่ชัดเจนมากขึ้น\",\n  \"overall_experience\": 4,\n  \"recommendation_likelihood\": 5,\n  \"feedback_for_platform\": \"แพลตฟอร์มใช้งานง่าย ช่วยได้มาก\"\n}"
+            },
+            "description": "Provider submits post-job questionnaire"
+          }
+        },
+        {
+          "name": "Submit Customer Questionnaire",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/customer-questionnaire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "customer-questionnaire"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_rating\": 5,\n  \"service_quality\": 5,\n  \"timeliness\": 4,\n  \"communication\": 5,\n  \"professionalism\": 5,\n  \"value_for_money\": 4,\n  \"overall_satisfaction\": 5,\n  \"would_recommend\": true,\n  \"would_hire_again\": true,\n  \"completion_time\": \"on_time\",\n  \"price_fairness\": \"fair\",\n  \"service_exceeded_expectations\": true,\n  \"positive_feedback\": \"ช่างทำงานดีมาก แอร์เย็นดีขึ้นมาก\",\n  \"areas_for_improvement\": \"ไม่มี ทำงานดีแล้ว\",\n  \"additional_services_received\": \"ทำความสะอาดเครื่องปรับอากาศให้ด้วย\",\n  \"problems_encountered\": \"ไม่มีปัญหา\",\n  \"recommendation_reason\": \"ทำงานดี ราคาถูก บริการดี\",\n  \"overall_experience_description\": \"ประสบการณ์ดีมาก ได้ช่างที่เชี่ยวชาญ\",\n  \"favorite_aspect\": \"ความเชี่ยวชาญและความเป็นมิตร\",\n  \"suggestion_for_provider\": \"ไม่มี ดีแล้ว\",\n  \"platform_feedback\": \"แพลตฟอร์มดีมาก ช่วยหาช่างได้ง่าย\"\n}"
+            },
+            "description": "Customer submits post-job evaluation"
+          }
+        },
+        {
+          "name": "Get Provider Questionnaire",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/provider-questionnaire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "provider-questionnaire"]
+            },
+            "description": "Retrieve provider questionnaire for a specific match"
+          }
+        },
+        {
+          "name": "Get Customer Questionnaire",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/matches/1/customer-questionnaire",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matches", "1", "customer-questionnaire"]
+            },
+            "description": "Retrieve customer questionnaire for a specific match"
+          }
+        },
+        {
+          "name": "Get Questionnaire Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/questionnaires/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "questionnaires", "stats"]
+            },
+            "description": "Get comprehensive questionnaire analytics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Database",
+      "item": [
+        {
+          "name": "Seed Database (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/seed",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "seed"]
+            },
+            "description": "Populate database with sample data (GET method for browser testing)"
+          }
+        },
+        {
+          "name": "Seed Database (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/seed",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "seed"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Populate database with sample data (POST method)"
+          }
+        }
+      ]
+    }
+  ]
+}

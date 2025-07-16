@@ -21,6 +21,7 @@ const matchRoutes = require('./routes/matches');
 const authRoutes = require('./routes/auth');
 const seedRoutes = require('./routes/seed');
 const questionnaireRoutes = require('./routes/questionnaires');
+const jobProgressRoutes = require('./routes/jobProgress');
 
 // Initialize express app
 const app = express();
@@ -82,6 +83,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/providers', providerRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/matches', matchRoutes);
+app.use('/api/job-progress', jobProgressRoutes);
 app.use('/api/seed', seedRoutes);
 
 // Auto-match endpoint

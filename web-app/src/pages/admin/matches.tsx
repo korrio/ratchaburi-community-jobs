@@ -22,7 +22,13 @@ import {
   Zap,
   TrendingUp,
   BarChart3,
-  DollarSign
+  DollarSign,
+  PlayCircle,
+  MapPin as MapPinIcon,
+  Truck,
+  Settings,
+  CheckCircle2,
+  Flag
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import ProviderQuestionnaire from '@/components/ProviderQuestionnaire';
@@ -71,6 +77,13 @@ const AdminMatches: React.FC = () => {
     { keepPreviousData: true }
   );
 
+  // Fetch job progress data
+  const { data: jobProgressData } = useQuery(
+    'job-progress',
+    () => apiEndpoints.getJobProgress(),
+    { keepPreviousData: true }
+  );
+
   // Fetch categories
   const { data: categoriesData } = useQuery(
     'categories',
@@ -97,6 +110,7 @@ const AdminMatches: React.FC = () => {
     {
       onSuccess: (response, variables) => {
         queryClient.invalidateQueries('admin-matches');
+        queryClient.invalidateQueries('job-progress');
         setIsModalOpen(false);
         
         // Trigger questionnaires when job is completed
@@ -122,6 +136,7 @@ const AdminMatches: React.FC = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('admin-matches');
+        queryClient.invalidateQueries('job-progress');
         setIsCreateModalOpen(false);
         setCreateMatchData({ provider_id: '', customer_id: '' });
       }
@@ -133,6 +148,7 @@ const AdminMatches: React.FC = () => {
   const categories = categoriesData?.data?.data || [];
   const providers = providersData?.data?.data || [];
   const customers = customersData?.data?.data || [];
+  const progressStageStats = jobProgressData?.data?.stage_stats || {};
 
   const resetUpdateData = () => {
     setUpdateData({
@@ -159,9 +175,26 @@ const AdminMatches: React.FC = () => {
   const handleSubmitUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedMatch) {
+      // Clean the data to only include relevant fields
+      const cleanData: MatchStatusUpdateData = {
+        status: updateData.status,
+        provider_response: updateData.provider_response,
+        customer_response: updateData.customer_response
+      };
+
+      // Only include rating and feedback if status is completed
+      if (updateData.status === 'completed') {
+        if (updateData.rating && updateData.rating > 0) {
+          cleanData.rating = updateData.rating;
+        }
+        if (updateData.feedback && updateData.feedback.trim() !== '') {
+          cleanData.feedback = updateData.feedback;
+        }
+      }
+
       await updateMatchMutation.mutateAsync({
         id: selectedMatch.id.toString(),
-        data: updateData
+        data: cleanData
       });
     }
   };
@@ -221,6 +254,84 @@ const AdminMatches: React.FC = () => {
     );
   };
 
+  const getJobProgressStage = (matchId: number) => {
+    if (!jobProgressData?.data?.data) return 'pending';
+    const progressData = jobProgressData.data.data.find((p: any) => p?.id === matchId);
+    return progressData?.job_progress || 'pending';
+  };
+
+  const getJobProgressSteps = (stage: string) => {
+    const steps = [
+      { key: 'pending', label: 'รอการตอบรับ', icon: Clock, color: 'gray' },
+      { key: 'accepted', label: 'รับงานแล้ว', icon: CheckCircle, color: 'blue' },
+      { key: 'arrived', label: 'ถึงหน้างาน', icon: MapPinIcon, color: 'orange' },
+      { key: 'started', label: 'เริ่มดำเนินงาน', icon: PlayCircle, color: 'yellow' },
+      { key: 'completed', label: 'เสร็จงาน', icon: CheckCircle2, color: 'green' },
+      { key: 'closed', label: 'ปิดงาน', icon: Flag, color: 'purple' }
+    ];
+
+    const currentStepIndex = steps.findIndex(step => step.key === stage);
+    
+    return steps.map((step, index) => ({
+      ...step,
+      completed: index <= currentStepIndex,
+      current: index === currentStepIndex
+    }));
+  };
+
+  const renderJobProgressIndicator = (matchId: number) => {
+    const stage = getJobProgressStage(matchId);
+    const steps = getJobProgressSteps(stage);
+    
+    return (
+      <div className="flex items-center space-x-1">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          let colorClass = 'text-gray-300';
+          
+          if (step.completed) {
+            colorClass = {
+              gray: 'text-gray-500',
+              blue: 'text-blue-500',
+              orange: 'text-orange-500',
+              yellow: 'text-yellow-500',
+              green: 'text-green-500',
+              purple: 'text-purple-500'
+            }[step.color];
+          }
+          
+          return (
+            <div key={step.key} className="flex items-center">
+              <div className={`relative ${step.current ? 'animate-pulse' : ''}`}>
+                <Icon className={`h-4 w-4 ${colorClass}`} />
+                {step.current && (
+                  <div className="absolute -inset-1 rounded-full border-2 border-blue-400 opacity-50 animate-ping" />
+                )}
+              </div>
+              {index < steps.length - 1 && (
+                <div className={`w-2 h-0.5 mx-1 ${
+                  step.completed ? 'bg-blue-300' : 'bg-gray-200'
+                }`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const getJobProgressText = (stage: string) => {
+    const stageLabels = {
+      pending: 'รอการตอบรับ',
+      accepted: 'รับงานแล้ว',
+      arrived: 'ถึงหน้างาน',
+      started: 'เริ่มดำเนินงาน',
+      completed: 'เสร็จงาน',
+      closed: 'ปิดงาน'
+    };
+    return stageLabels[stage as keyof typeof stageLabels] || 'ไม่ระบุ';
+  };
+
   return (
     <AdminLayout title="จัดการการจับคู่">
       <div className="space-y-6">
@@ -237,7 +348,7 @@ const AdminMatches: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -252,12 +363,12 @@ const AdminMatches: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Clock className="h-8 w-8 text-yellow-600" />
+                <CheckCircle className="h-8 w-8 text-blue-600" />
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500">รอการตอบกลับ</p>
+                <p className="text-sm font-medium text-gray-500">รับงานแล้ว</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {matches.filter((m: JobMatch) => m.status === 'pending').length}
+                  {progressStageStats.accepted || 0}
                 </p>
               </div>
             </div>
@@ -265,12 +376,12 @@ const AdminMatches: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <CheckCircle className="h-8 w-8 text-green-600" />
+                <MapPinIcon className="h-8 w-8 text-orange-600" />
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500">สำเร็จ</p>
+                <p className="text-sm font-medium text-gray-500">ถึงหน้างาน</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {matches.filter((m: JobMatch) => m.status === 'completed').length}
+                  {progressStageStats.arrived || 0}
                 </p>
               </div>
             </div>
@@ -278,12 +389,38 @@ const AdminMatches: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-8 w-8 text-purple-600" />
+                <PlayCircle className="h-8 w-8 text-yellow-600" />
               </div>
               <div className="ml-5">
-                <p className="text-sm font-medium text-gray-500">รายได้ชุมชน</p>
+                <p className="text-sm font-medium text-gray-500">กำลังทำงาน</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  5,000 บาท
+                  {progressStageStats.started || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <CheckCircle2 className="h-8 w-8 text-green-600" />
+              </div>
+              <div className="ml-5">
+                <p className="text-sm font-medium text-gray-500">เสร็จงาน</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {progressStageStats.completed || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Flag className="h-8 w-8 text-purple-600" />
+              </div>
+              <div className="ml-5">
+                <p className="text-sm font-medium text-gray-500">ปิดงาน</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {progressStageStats.closed || 0}
                 </p>
               </div>
             </div>
@@ -382,10 +519,10 @@ const AdminMatches: React.FC = () => {
                     คะแนนความเข้ากัน
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    สถานะ
+                    ความคืบหน้างาน
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    การตอบกลับ
+                    สถานะปัจจุบัน
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     วันที่จับคู่
@@ -409,65 +546,77 @@ const AdminMatches: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  matches.map((match: JobMatch) => (
-                    <tr key={match.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <UserCheck className="h-5 w-5 text-blue-600" />
+                  matches.map((match: JobMatch) => {
+                    const jobStage = getJobProgressStage(match.id);
+                    return (
+                      <tr key={match.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <UserCheck className="h-5 w-5 text-blue-600" />
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {match.provider_name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                → {match.customer_name}
+                              </div>
                             </div>
                           </div>
-                          <div className="ml-4">
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {match.category_icon} {match.category_name}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 w-16 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-primary-600 h-2 rounded-full"
+                                style={{ width: `${match.match_score * 100}%` }}
+                              />
+                            </div>
+                            <div className="ml-2 text-sm text-gray-900">
+                              {(match.match_score * 100).toFixed(0)}%
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="space-y-2">
+                            {renderJobProgressIndicator(match.id)}
+                            <div className="text-xs text-gray-500">
+                              5 ขั้นตอน
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="space-y-1">
                             <div className="text-sm font-medium text-gray-900">
-                              {match.provider_name}
+                              {getJobProgressText(jobStage)}
                             </div>
-                            <div className="text-sm text-gray-500">
-                              → {match.customer_name}
+                            <div className="text-xs text-gray-500">
+                              อัพเดท: {new Date().toLocaleDateString('th-TH')}
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {match.category_icon} {match.category_name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 w-16 bg-gray-200 rounded-full h-2">
-                            <div 
-                              className="bg-primary-600 h-2 rounded-full"
-                              style={{ width: `${match.match_score * 100}%` }}
-                            />
-                          </div>
-                          <div className="ml-2 text-sm text-gray-900">
-                            {(match.match_score * 100).toFixed(0)}%
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(match.status)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {match.response_date 
-                          ? new Date(match.response_date).toLocaleDateString('th-TH')
-                          : '-'
-                        }
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(match.match_date).toLocaleDateString('th-TH')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => handleUpdateMatch(match)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(match.match_date).toLocaleDateString('th-TH')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => handleUpdateMatch(match)}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

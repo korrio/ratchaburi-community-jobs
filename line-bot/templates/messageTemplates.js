@@ -324,22 +324,41 @@ class MessageTemplates {
             type: 'button',
             style: 'primary',
             height: 'sm',
-            color: '#0ea5e9',
+            color: '#16a34a',
             action: {
               type: 'postback',
-              label: 'ดูรายละเอียด',
-              data: `action=view_customer&id=${customer.id}`
+              label: '🤝 รับงาน',
+              data: `action=accept_job&customer_id=${customer.id}`
             }
           },
           {
-            type: 'button',
-            style: 'secondary',
-            height: 'sm',
-            action: {
-              type: 'postback',
-              label: 'ติดต่อ',
-              data: `action=contact_customer&id=${customer.id}`
-            }
+            type: 'box',
+            layout: 'horizontal',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'button',
+                style: 'secondary',
+                height: 'sm',
+                flex: 1,
+                action: {
+                  type: 'postback',
+                  label: 'ดูรายละเอียด',
+                  data: `action=view_customer&id=${customer.id}`
+                }
+              },
+              {
+                type: 'button',
+                style: 'secondary',
+                height: 'sm',
+                flex: 1,
+                action: {
+                  type: 'postback',
+                  label: 'ติดต่อ',
+                  data: `action=contact_customer&id=${customer.id}`
+                }
+              }
+            ]
           }
         ]
       }
@@ -779,6 +798,438 @@ class MessageTemplates {
         return '🟢 ไม่เร่งด่วน';
       default:
         return '⚪ ไม่ระบุ';
+    }
+  }
+
+  createJobAcceptanceConfirmation(customer, provider) {
+    return {
+      type: 'flex',
+      altText: 'ยืนยันการรับงาน',
+      contents: {
+        type: 'bubble',
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: '🤝 ยืนยันการรับงาน',
+              weight: 'bold',
+              size: 'xl',
+              color: '#0ea5e9'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '📋 รายละเอียดงาน',
+              weight: 'bold',
+              size: 'md',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: `👤 ลูกค้า: ${customer.name}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'sm'
+            },
+            {
+              type: 'text',
+              text: `📞 โทร: ${customer.phone}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'xs'
+            },
+            {
+              type: 'text',
+              text: `📍 ที่อยู่: ${customer.location}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'xs',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: `🏘️ พื้นที่: ${customer.subdistrict}, ${customer.district}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'xs'
+            },
+            {
+              type: 'separator',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: `💼 งาน: ${customer.job_description}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'sm',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: `💰 งบประมาณ: ${customer.budget_range || 'ติดต่อสอบถาม'}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'xs'
+            },
+            {
+              type: 'text',
+              text: this.getUrgencyBadge(customer.urgency_level),
+              size: 'sm',
+              margin: 'xs'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '⚠️ หลังจากยืนยันแล้ว ระบบจะส่งข้อมูลติดต่อให้ลูกค้าทราบ และคุณต้องติดต่อลูกค้าเพื่อนัดหมายทำงาน',
+              size: 'xs',
+              color: '#ef4444',
+              margin: 'lg',
+              wrap: true
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'sm',
+              color: '#16a34a',
+              action: {
+                type: 'postback',
+                label: '✅ ยืนยันรับงาน',
+                data: `action=confirm_accept_job&customer_id=${customer.id}&provider_id=${provider.id}`
+              }
+            },
+            {
+              type: 'button',
+              style: 'secondary',
+              height: 'sm',
+              action: {
+                type: 'postback',
+                label: '❌ ยกเลิก',
+                data: 'action=cancel_accept_job'
+              }
+            }
+          ]
+        }
+      }
+    };
+  }
+
+  createJobProgressUpdate(jobData, stage) {
+    const stageInfo = this.getJobStageInfo(stage);
+    const match = jobData.match;
+
+    return {
+      type: 'flex',
+      altText: `อัพเดทสถานะงาน: ${stageInfo.name}`,
+      contents: {
+        type: 'bubble',
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: `✅ ${stageInfo.name}`,
+              weight: 'bold',
+              size: 'xl',
+              color: stageInfo.color
+            },
+            {
+              type: 'text',
+              text: `🎯 สถานะ: ${stageInfo.description}`,
+              size: 'sm',
+              color: '#64748b',
+              margin: 'sm',
+              wrap: true
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: `📋 งาน: ${match.job_description}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'lg',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: `👤 ลูกค้า: ${match.customer_name}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'sm'
+            },
+            {
+              type: 'text',
+              text: `📞 โทร: ${match.customer_phone}`,
+              size: 'sm',
+              color: '#374151',
+              margin: 'xs'
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: this.getNextActionButtons(stage, match.id)
+        }
+      }
+    };
+  }
+
+  createMyJobsCarousel(jobs) {
+    const bubbles = jobs.map(job => ({
+      type: 'bubble',
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'text',
+            text: job.customer_name,
+            weight: 'bold',
+            size: 'lg'
+          },
+          {
+            type: 'text',
+            text: this.getJobStageInfo(job.job_progress).name,
+            size: 'sm',
+            color: this.getJobStageInfo(job.job_progress).color,
+            margin: 'xs'
+          },
+          {
+            type: 'separator',
+            margin: 'md'
+          },
+          {
+            type: 'text',
+            text: job.job_description,
+            size: 'sm',
+            color: '#374151',
+            margin: 'md',
+            wrap: true,
+            maxLines: 2
+          },
+          {
+            type: 'text',
+            text: `📞 ${job.customer_phone}`,
+            size: 'sm',
+            color: '#64748b',
+            margin: 'sm'
+          },
+          {
+            type: 'text',
+            text: `💰 ${job.budget_range || 'ติดต่อสอบถาม'}`,
+            size: 'sm',
+            color: '#64748b',
+            margin: 'xs'
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        spacing: 'sm',
+        contents: this.getJobActionButtons(job.job_progress, job.id)
+      }
+    }));
+
+    return {
+      type: 'flex',
+      altText: 'งานของฉัน',
+      contents: {
+        type: 'carousel',
+        contents: bubbles
+      }
+    };
+  }
+
+  getJobStageInfo(stage) {
+    const stages = {
+      'pending': { name: 'รอการตอบกลับ', color: '#6b7280', description: 'รอการตอบรับงาน' },
+      'accepted': { name: 'รับงานแล้ว', color: '#3b82f6', description: 'งานถูกรับแล้ว รอการเดินทาง' },
+      'arrived': { name: 'ถึงหน้างาน', color: '#f59e0b', description: 'มาถึงสถานที่ทำงานแล้ว' },
+      'started': { name: 'เริ่มดำเนินงาน', color: '#f97316', description: 'กำลังดำเนินงานอยู่' },
+      'completed': { name: 'เสร็จงาน', color: '#8b5cf6', description: 'งานเสร็จแล้ว รอ feedback ลูกค้า' },
+      'closed': { name: 'ปิดงาน', color: '#16a34a', description: 'งานปิดสมบูรณ์แล้ว' }
+    };
+    return stages[stage] || stages['pending'];
+  }
+
+  getNextActionButtons(stage, matchId) {
+    const baseButtons = [
+      {
+        type: 'button',
+        style: 'secondary',
+        height: 'sm',
+        action: {
+          type: 'postback',
+          label: '📋 ดูงานของฉัน',
+          data: 'action=view_my_jobs'
+        }
+      }
+    ];
+
+    switch (stage) {
+      case 'accepted':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#f59e0b',
+            action: {
+              type: 'postback',
+              label: '🚗 ถึงหน้างานแล้ว',
+              data: `action=update_progress&match_id=${matchId}&stage=arrived`
+            }
+          },
+          ...baseButtons
+        ];
+      
+      case 'arrived':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#f97316',
+            action: {
+              type: 'postback',
+              label: '🔧 เริ่มดำเนินงาน',
+              data: `action=update_progress&match_id=${matchId}&stage=started`
+            }
+          },
+          ...baseButtons
+        ];
+      
+      case 'started':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#8b5cf6',
+            action: {
+              type: 'postback',
+              label: '🎉 เสร็จงานแล้ว',
+              data: `action=update_progress&match_id=${matchId}&stage=completed`
+            }
+          },
+          ...baseButtons
+        ];
+      
+      default:
+        return baseButtons;
+    }
+  }
+
+  getJobActionButtons(stage, matchId) {
+    switch (stage) {
+      case 'accepted':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#f59e0b',
+            action: {
+              type: 'postback',
+              label: '🚗 ถึงหน้างาน',
+              data: `action=update_progress&match_id=${matchId}&stage=arrived`
+            }
+          }
+        ];
+      
+      case 'arrived':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#f97316',
+            action: {
+              type: 'postback',
+              label: '🔧 เริ่มทำงาน',
+              data: `action=update_progress&match_id=${matchId}&stage=started`
+            }
+          }
+        ];
+      
+      case 'started':
+        return [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            color: '#8b5cf6',
+            action: {
+              type: 'postback',
+              label: '🎉 เสร็จงาน',
+              data: `action=update_progress&match_id=${matchId}&stage=completed`
+            }
+          }
+        ];
+      
+      case 'completed':
+        return [
+          {
+            type: 'button',
+            style: 'secondary',
+            height: 'sm',
+            action: {
+              type: 'postback',
+              label: '⏳ รอ feedback ลูกค้า',
+              data: `action=view_job_status&match_id=${matchId}`
+            }
+          }
+        ];
+      
+      case 'closed':
+        return [
+          {
+            type: 'button',
+            style: 'secondary',
+            height: 'sm',
+            action: {
+              type: 'postback',
+              label: '✅ งานปิดแล้ว',
+              data: `action=view_job_status&match_id=${matchId}`
+            }
+          }
+        ];
+      
+      default:
+        return [
+          {
+            type: 'button',
+            style: 'secondary',
+            height: 'sm',
+            action: {
+              type: 'postback',
+              label: 'ดูรายละเอียด',
+              data: `action=view_job_status&match_id=${matchId}`
+            }
+          }
+        ];
     }
   }
 

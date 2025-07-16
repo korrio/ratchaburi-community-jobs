@@ -92,13 +92,20 @@ class Database {
         customer_id INTEGER,
         match_score REAL DEFAULT 0,
         status TEXT DEFAULT 'pending',
+        job_progress TEXT DEFAULT 'pending',
         provider_response TEXT,
         customer_response TEXT,
         match_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         response_date DATETIME,
+        arrival_time DATETIME,
+        start_time DATETIME,
         completion_date DATETIME,
+        final_close_date DATETIME,
         rating INTEGER,
         feedback TEXT,
+        estimated_duration TEXT,
+        actual_duration TEXT,
+        final_cost DECIMAL(10,2),
         FOREIGN KEY (provider_id) REFERENCES service_providers(id),
         FOREIGN KEY (customer_id) REFERENCES customers(id)
       )`,
@@ -123,6 +130,35 @@ class Database {
         type TEXT DEFAULT 'info',
         is_read BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      // Job Progress Tracking table
+      `CREATE TABLE IF NOT EXISTS job_progress_tracking (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        match_id INTEGER NOT NULL,
+        stage TEXT NOT NULL,
+        status TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        notes TEXT,
+        location_info TEXT,
+        images TEXT,
+        updated_by TEXT,
+        FOREIGN KEY (match_id) REFERENCES job_matches(id)
+      )`,
+
+      // Customer Feedback table (separate from questionnaires for progress tracking)
+      `CREATE TABLE IF NOT EXISTS customer_job_feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        match_id INTEGER NOT NULL,
+        service_rating INTEGER CHECK(service_rating >= 1 AND service_rating <= 5),
+        quality_rating INTEGER CHECK(quality_rating >= 1 AND quality_rating <= 5),
+        timeliness_rating INTEGER CHECK(timeliness_rating >= 1 AND timeliness_rating <= 5),
+        overall_rating INTEGER CHECK(overall_rating >= 1 AND overall_rating <= 5),
+        feedback_text TEXT,
+        would_recommend BOOLEAN DEFAULT TRUE,
+        would_hire_again BOOLEAN DEFAULT TRUE,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (match_id) REFERENCES job_matches(id)
       )`
     ];
 

@@ -83,6 +83,12 @@ export const apiEndpoints = {
   getProviderQuestionnaire: (matchId: string) => api.get(`/matches/${matchId}/provider-questionnaire`),
   getCustomerQuestionnaire: (matchId: string) => api.get(`/matches/${matchId}/customer-questionnaire`),
   getQuestionnaireStats: () => api.get('/questionnaires/stats'),
+  
+  // Job Progress
+  getJobProgress: (params?: any) => api.get('/job-progress', { params }),
+  getJobProgressById: (matchId: string) => api.get(`/job-progress/${matchId}`),
+  updateJobProgress: (matchId: string, data: any) => api.post(`/job-progress/${matchId}/update`, data),
+  submitCustomerFeedback: (matchId: string, data: any) => api.post(`/job-progress/${matchId}/customer-feedback`, data),
 };
 
 export default api;

@@ -1,0 +1,955 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ratchaburi Community Jobs API",
+    "version": "1.0.0",
+    "description": "API documentation for Ratchaburi Community Jobs platform - A comprehensive job matching platform for local services in Ratchaburi province",
+    "contact": {
+      "name": "Ratchaburi Community Team",
+      "email": "support@ratchaburicommunity.co.th"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://ratchaburi-api.vercel.app",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Provider ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Provider name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "line_id": {
+            "type": "string",
+            "description": "LINE ID"
+          },
+          "service_category_id": {
+            "type": "integer",
+            "description": "Service category ID"
+          },
+          "location": {
+            "type": "string",
+            "description": "Address"
+          },
+          "district": {
+            "type": "string",
+            "description": "District"
+          },
+          "subdistrict": {
+            "type": "string",
+            "description": "Subdistrict"
+          },
+          "province": {
+            "type": "string",
+            "description": "Province"
+          },
+          "description": {
+            "type": "string",
+            "description": "Service description"
+          },
+          "price_range": {
+            "type": "string",
+            "description": "Price range"
+          },
+          "available_days": {
+            "type": "string",
+            "description": "Available days"
+          },
+          "available_hours": {
+            "type": "string",
+            "description": "Available hours"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Rating (0-5)"
+          },
+          "total_jobs": {
+            "type": "integer",
+            "description": "Total completed jobs"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Active status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Customer ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Customer name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "line_id": {
+            "type": "string",
+            "description": "LINE ID"
+          },
+          "location": {
+            "type": "string",
+            "description": "Address"
+          },
+          "district": {
+            "type": "string",
+            "description": "District"
+          },
+          "subdistrict": {
+            "type": "string",
+            "description": "Subdistrict"
+          },
+          "province": {
+            "type": "string",
+            "description": "Province"
+          },
+          "service_category_id": {
+            "type": "integer",
+            "description": "Service category ID"
+          },
+          "job_description": {
+            "type": "string",
+            "description": "Job description"
+          },
+          "budget_range": {
+            "type": "string",
+            "description": "Budget range"
+          },
+          "urgency_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Urgency level"
+          },
+          "preferred_contact": {
+            "type": "string",
+            "enum": ["phone", "line", "both"],
+            "description": "Preferred contact method"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "Active status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "JobMatch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Match ID"
+          },
+          "provider_id": {
+            "type": "integer",
+            "description": "Provider ID"
+          },
+          "customer_id": {
+            "type": "integer",
+            "description": "Customer ID"
+          },
+          "match_score": {
+            "type": "number",
+            "description": "Match score (0-1)"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "accepted", "rejected", "completed", "cancelled"],
+            "description": "Match status"
+          },
+          "provider_response": {
+            "type": "string",
+            "description": "Provider response"
+          },
+          "customer_response": {
+            "type": "string",
+            "description": "Customer response"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "Job rating (1-5)"
+          },
+          "feedback": {
+            "type": "string",
+            "description": "Job feedback"
+          },
+          "match_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "response_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completion_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ServiceCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "username": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "System is healthy"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "get": {
+        "summary": "Verify JWT token",
+        "tags": ["Authentication"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token is valid"
+          },
+          "401": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
+    "/api/providers": {
+      "get": {
+        "summary": "Get all service providers",
+        "tags": ["Providers"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category_id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by service category"
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by district"
+          },
+          {
+            "in": "query",
+            "name": "subdistrict",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by subdistrict"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by name or description"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of providers"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new provider",
+        "tags": ["Providers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Provider"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Provider created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/providers/categories": {
+      "get": {
+        "summary": "Get all service categories",
+        "tags": ["Providers"],
+        "responses": {
+          "200": {
+            "description": "List of service categories"
+          }
+        }
+      }
+    },
+    "/api/providers/{id}": {
+      "get": {
+        "summary": "Get provider by ID",
+        "tags": ["Providers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Provider ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider details"
+          },
+          "404": {
+            "description": "Provider not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update provider",
+        "tags": ["Providers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Provider ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Provider"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Provider updated successfully"
+          },
+          "404": {
+            "description": "Provider not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete provider",
+        "tags": ["Providers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Provider ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider deleted successfully"
+          },
+          "404": {
+            "description": "Provider not found"
+          }
+        }
+      }
+    },
+    "/api/customers": {
+      "get": {
+        "summary": "Get all customers",
+        "tags": ["Customers"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category_id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by service category"
+          },
+          {
+            "in": "query",
+            "name": "district",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by district"
+          },
+          {
+            "in": "query",
+            "name": "urgency_level",
+            "schema": {
+              "type": "string",
+              "enum": ["low", "medium", "high"]
+            },
+            "description": "Filter by urgency level"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by name or job description"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of customers"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new customer",
+        "tags": ["Customers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Customer created successfully"
+          }
+        }
+      }
+    },
+    "/api/customers/{id}": {
+      "get": {
+        "summary": "Get customer by ID",
+        "tags": ["Customers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer details"
+          },
+          "404": {
+            "description": "Customer not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update customer",
+        "tags": ["Customers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Customer updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete customer",
+        "tags": ["Customers"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/matches": {
+      "get": {
+        "summary": "Get all job matches",
+        "tags": ["Matches"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "provider_id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by provider ID"
+          },
+          {
+            "in": "query",
+            "name": "customer_id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by customer ID"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "accepted", "rejected", "completed", "cancelled"]
+            },
+            "description": "Filter by match status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of job matches"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create manual job match",
+        "tags": ["Matches"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["provider_id", "customer_id"],
+                "properties": {
+                  "provider_id": {
+                    "type": "integer"
+                  },
+                  "customer_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Match created successfully"
+          }
+        }
+      }
+    },
+    "/api/matches/stats": {
+      "get": {
+        "summary": "Get match statistics",
+        "tags": ["Matches"],
+        "responses": {
+          "200": {
+            "description": "Match statistics"
+          }
+        }
+      }
+    },
+    "/api/matches/{id}": {
+      "get": {
+        "summary": "Get match by ID",
+        "tags": ["Matches"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Match details"
+          },
+          "404": {
+            "description": "Match not found"
+          }
+        }
+      }
+    },
+    "/api/matches/{id}/status": {
+      "put": {
+        "summary": "Update match status",
+        "tags": ["Matches"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "accepted", "rejected", "completed", "cancelled"]
+                  },
+                  "provider_response": {
+                    "type": "string"
+                  },
+                  "customer_response": {
+                    "type": "string"
+                  },
+                  "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "feedback": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Match status updated successfully"
+          }
+        }
+      }
+    },
+    "/api/auto-matches": {
+      "get": {
+        "summary": "Get auto-generated matches",
+        "tags": ["Matches"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of auto-generated matches"
+          }
+        }
+      }
+    },
+    "/api/matches/{matchId}/provider-questionnaire": {
+      "post": {
+        "summary": "Submit provider questionnaire",
+        "tags": ["Questionnaires"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "matchId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaire submitted successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get provider questionnaire",
+        "tags": ["Questionnaires"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "matchId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider questionnaire data"
+          }
+        }
+      }
+    },
+    "/api/matches/{matchId}/customer-questionnaire": {
+      "post": {
+        "summary": "Submit customer questionnaire",
+        "tags": ["Questionnaires"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "matchId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questionnaire submitted successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get customer questionnaire",
+        "tags": ["Questionnaires"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "matchId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer questionnaire data"
+          }
+        }
+      }
+    },
+    "/api/questionnaires/stats": {
+      "get": {
+        "summary": "Get questionnaire statistics",
+        "tags": ["Questionnaires"],
+        "responses": {
+          "200": {
+            "description": "Questionnaire statistics"
+          }
+        }
+      }
+    },
+    "/api/seed": {
+      "get": {
+        "summary": "Seed database with sample data",
+        "tags": ["Database"],
+        "responses": {
+          "200": {
+            "description": "Database seeded successfully"
+          }
+        }
+      },
+      "post": {
+        "summary": "Seed database with sample data",
+        "tags": ["Database"],
+        "responses": {
+          "200": {
+            "description": "Database seeded successfully"
+          }
+        }
+      }
+    }
+  }
+}
