@@ -226,6 +226,568 @@ router.get('/:matchId/customer-questionnaire', (req, res) => {
   });
 });
 
+// Direct access to provider questionnaire form
+router.get('/provider/:matchId', (req, res) => {
+  const { matchId } = req.params;
+  const { name, job, phone } = req.query;
+  
+  // Create HTML form for provider questionnaire
+  const html = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสอบถามผู้ให้บริการ - JOB ชุมชน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .star-rating { display: flex; align-items: center; }
+        .star { cursor: pointer; color: #d1d5db; font-size: 1.5rem; transition: color 0.2s; }
+        .star.active { color: #fbbf24; }
+        .star:hover { color: #fbbf24; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">แบบสอบถามผู้ให้บริการ</h1>
+                <div class="text-2xl font-bold text-blue-600">JOB ชุมชน</div>
+                <p class="text-gray-600 mt-4">กรุณากรอกข้อมูลหลังการทำงานเสร็จสิ้น</p>
+            </div>
+
+            <!-- Job Info -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 class="font-medium text-gray-900 mb-2">ข้อมูลงาน</h3>
+                <p class="text-sm text-gray-600">รหัสงาน: ${matchId}</p>
+                ${name ? `<p class="text-sm text-gray-600">ลูกค้า: ${decodeURIComponent(name)}</p>` : ''}
+                ${job ? `<p class="text-sm text-gray-600">รายละเอียด: ${decodeURIComponent(job)}</p>` : ''}
+                ${phone ? `<p class="text-sm text-gray-600">โทร: ${decodeURIComponent(phone)}</p>` : ''}
+            </div>
+
+            <form id="providerForm" onsubmit="submitForm(event)">
+                <!-- Payment Information -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">💰 ข้อมูลการชำระเงิน</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="payment_received" name="payment_received" class="h-4 w-4 text-blue-600 rounded">
+                            <label for="payment_received" class="ml-2 text-sm text-gray-900">ได้รับเงินค่าจ้างแล้ว</label>
+                        </div>
+                        <div id="paymentDetails" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">จำนวนเงินที่ได้รับ (บาท)</label>
+                                <input type="number" name="payment_amount" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">วิธีการชำระเงิน</label>
+                                <select name="payment_method" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
+                                    <option value="">เลือกวิธีการชำระเงิน</option>
+                                    <option value="cash">เงินสด</option>
+                                    <option value="bank_transfer">โอนเงิน</option>
+                                    <option value="mobile_banking">แอปธนาคาร</option>
+                                    <option value="promptpay">พร้อมเพย์</option>
+                                    <option value="other">อื่นๆ</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Information -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">⏰ ข้อมูลการทำงาน</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">วันที่ทำงานเสร็จ</label>
+                            <input type="date" name="job_completion_date" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">จำนวนชั่วโมงที่ทำงานจริง</label>
+                            <input type="number" name="actual_hours_worked" min="0" step="0.5" required class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ระดับความยากของงาน</label>
+                            <select name="difficulty_level" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
+                                <option value="easy">ง่าย</option>
+                                <option value="medium" selected>ปานกลาง</option>
+                                <option value="hard">ยาก</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Satisfaction -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">👥 ความพึงพอใจของลูกค้า</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ความพึงพอใจของลูกค้า (1-5 ดาว)</label>
+                            <div class="star-rating">
+                                <input type="hidden" name="customer_satisfaction" value="5">
+                                <span class="star active" data-rating="1" data-field="customer_satisfaction">⭐</span>
+                                <span class="star active" data-rating="2" data-field="customer_satisfaction">⭐</span>
+                                <span class="star active" data-rating="3" data-field="customer_satisfaction">⭐</span>
+                                <span class="star active" data-rating="4" data-field="customer_satisfaction">⭐</span>
+                                <span class="star active" data-rating="5" data-field="customer_satisfaction">⭐</span>
+                                <span class="ml-2 text-sm text-gray-600" id="customer_satisfaction_text">5 ดาว</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="would_work_again" name="would_work_again" checked class="h-4 w-4 text-blue-600 rounded">
+                            <label for="would_work_again" class="ml-2 text-sm text-gray-900">ยินดีทำงานกับลูกค้ารายนี้อีก</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">💬 ข้อมูลเพิ่มเติม</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">บริการเพิ่มเติมที่เสนอ</label>
+                            <textarea name="additional_services_offered" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="บริการหรือคำแนะนำเพิ่มเติมที่เสนอให้ลูกค้า..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ปัญหาหรือความท้าทายที่พบ</label>
+                            <textarea name="challenges_faced" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ปัญหาหรือความยากลำบากที่พบระหว่างการทำงาน..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ข้อเสนอแนะเพื่อปรับปรุง</label>
+                            <textarea name="suggestions_for_improvement" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ข้อเสนอแนะเพื่อปรับปรุงกระบวนการทำงาน..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall Experience -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">⚡ ประสบการณ์โดยรวม</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ประสบการณ์โดยรวม (1-5 ดาว)</label>
+                            <div class="star-rating">
+                                <input type="hidden" name="overall_experience" value="5">
+                                <span class="star active" data-rating="1" data-field="overall_experience">⭐</span>
+                                <span class="star active" data-rating="2" data-field="overall_experience">⭐</span>
+                                <span class="star active" data-rating="3" data-field="overall_experience">⭐</span>
+                                <span class="star active" data-rating="4" data-field="overall_experience">⭐</span>
+                                <span class="star active" data-rating="5" data-field="overall_experience">⭐</span>
+                                <span class="ml-2 text-sm text-gray-600" id="overall_experience_text">5 ดาว</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ความน่าจะเป็นที่จะแนะนำแพลตฟอร์มนี้ (1-5 ดาว)</label>
+                            <div class="star-rating">
+                                <input type="hidden" name="recommendation_likelihood" value="5">
+                                <span class="star active" data-rating="1" data-field="recommendation_likelihood">⭐</span>
+                                <span class="star active" data-rating="2" data-field="recommendation_likelihood">⭐</span>
+                                <span class="star active" data-rating="3" data-field="recommendation_likelihood">⭐</span>
+                                <span class="star active" data-rating="4" data-field="recommendation_likelihood">⭐</span>
+                                <span class="star active" data-rating="5" data-field="recommendation_likelihood">⭐</span>
+                                <span class="ml-2 text-sm text-gray-600" id="recommendation_likelihood_text">5 ดาว</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ข้อเสนอแนะสำหรับแพลตฟอร์ม</label>
+                            <textarea name="feedback_for_platform" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ข้อเสนอแนะเพื่อปรับปรุงแพลตฟอร์ม..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" id="submitBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-medium text-lg">
+                        ส่งแบบสอบถาม
+                    </button>
+                </div>
+            </form>
+
+            <div id="successMessage" class="hidden text-center py-8">
+                <div class="text-green-600 text-6xl mb-4">✅</div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">ขอบคุณสำหรับข้อมูล!</h2>
+                <p class="text-gray-600">แบบสอบถามได้รับการบันทึกเรียบร้อยแล้ว</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Payment checkbox toggle
+        document.getElementById('payment_received').addEventListener('change', function() {
+            const paymentDetails = document.getElementById('paymentDetails');
+            if (this.checked) {
+                paymentDetails.classList.remove('hidden');
+            } else {
+                paymentDetails.classList.add('hidden');
+            }
+        });
+
+        // Star rating functionality
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.dataset.rating);
+                const field = this.dataset.field;
+                const stars = document.querySelectorAll(\`[data-field="\${field}"]\`);
+                const hiddenInput = document.querySelector(\`input[name="\${field}"]\`);
+                const textSpan = document.getElementById(\`\${field}_text\`);
+                
+                hiddenInput.value = rating;
+                textSpan.textContent = \`\${rating} ดาว\`;
+                
+                stars.forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Form submission
+        async function submitForm(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('providerForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังส่ง...';
+            
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (key === 'payment_received' || key === 'would_work_again') {
+                    data[key] = true;
+                } else if (key.includes('rating') || key.includes('experience') || key.includes('satisfaction') || key.includes('likelihood')) {
+                    data[key] = parseInt(value);
+                } else if (key === 'payment_amount' || key === 'actual_hours_worked') {
+                    data[key] = parseFloat(value) || null;
+                } else {
+                    data[key] = value || null;
+                }
+            }
+            
+            // Add unchecked checkboxes
+            if (!formData.has('payment_received')) data.payment_received = false;
+            if (!formData.has('would_work_again')) data.would_work_again = false;
+            
+            try {
+                const response = await fetch(\`/api/questionnaires/${matchId}/provider-questionnaire\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    form.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+                } else {
+                    alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + (result.error || 'ไม่ทราบสาเหตุ'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'ส่งแบบสอบถาม';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ส่งแบบสอบถาม';
+            }
+        }
+    </script>
+</body>
+</html>
+  `;
+
+  res.send(html);
+});
+
+// Direct access to customer questionnaire form
+router.get('/customer/:matchId', (req, res) => {
+  const { matchId } = req.params;
+  const { name, job, category } = req.query;
+  
+  // Create HTML form for customer questionnaire
+  const html = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบประเมินการให้บริการ - JOB ชุมชน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .star-rating { display: flex; align-items: center; }
+        .star { cursor: pointer; color: #d1d5db; font-size: 1.5rem; transition: color 0.2s; }
+        .star.active { color: #fbbf24; }
+        .star:hover { color: #fbbf24; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">แบบประเมินการให้บริการ</h1>
+                <div class="text-2xl font-bold text-blue-600">JOB ชุมชน</div>
+                <p class="text-gray-600 mt-4">กรุณาให้คะแนนและประเมินการให้บริการ</p>
+            </div>
+
+            <!-- Service Info -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 class="font-medium text-gray-900 mb-2">ข้อมูลการให้บริการ</h3>
+                <p class="text-sm text-gray-600">รหัสงาน: ${matchId}</p>
+                ${name ? `<p class="text-sm text-gray-600">ผู้ให้บริการ: ${decodeURIComponent(name)}</p>` : ''}
+                ${category ? `<p class="text-sm text-gray-600">ประเภทงาน: ${decodeURIComponent(category)}</p>` : ''}
+                ${job ? `<p class="text-sm text-gray-600">รายละเอียด: ${decodeURIComponent(job)}</p>` : ''}
+            </div>
+
+            <form id="customerForm" onsubmit="submitForm(event)">
+                <!-- Service Rating Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">⭐ คะแนนการให้บริการ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            ${createStarRating('service_rating', 'คะแนนโดยรวม')}
+                            ${createStarRating('service_quality', 'คุณภาพการให้บริการ')}
+                            ${createStarRating('timeliness', 'ความตรงต่อเวลา')}
+                            ${createStarRating('communication', 'การสื่อสาร')}
+                        </div>
+                        <div class="space-y-4">
+                            ${createStarRating('professionalism', 'ความเป็นมืออาชีพ')}
+                            ${createStarRating('value_for_money', 'ความคุ้มค่าของเงิน')}
+                            ${createStarRating('overall_satisfaction', 'ความพึงพอใจโดยรวม')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Assessment -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">✅ การประเมินบริการ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ระยะเวลาการทำงาน</label>
+                            <select name="completion_time" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                <option value="faster">เร็วกว่าที่คาด</option>
+                                <option value="on_time" selected>ตรงเวลาที่กำหนด</option>
+                                <option value="slower">ช้ากว่าที่คาด</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ความเหมาะสมของราคา</label>
+                            <select name="price_fairness" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                <option value="cheap">ถูกกว่าที่คาด</option>
+                                <option value="fair" selected>เหมาะสมกับคุณภาพ</option>
+                                <option value="expensive">แพงกว่าที่คาด</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="service_exceeded_expectations" name="service_exceeded_expectations" checked class="h-4 w-4 text-blue-600 rounded">
+                            <label for="service_exceeded_expectations" class="ml-2 text-sm text-gray-900">การให้บริการเกินความคาดหวัง</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="would_recommend" name="would_recommend" checked class="h-4 w-4 text-blue-600 rounded">
+                            <label for="would_recommend" class="ml-2 text-sm text-gray-900">จะแนะนำให้คนอื่นใช้บริการ</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="would_hire_again" name="would_hire_again" checked class="h-4 w-4 text-blue-600 rounded">
+                            <label for="would_hire_again" class="ml-2 text-sm text-gray-900">จะจ้างผู้ให้บริการรายนี้อีก</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Feedback -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">💬 ความคิดเห็นรายละเอียด</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">สิ่งที่ประทับใจมากที่สุด</label>
+                            <textarea name="positive_feedback" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="สิ่งที่ผู้ให้บริการทำได้ดีมาก..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">จุดที่ควรปรับปรุง</label>
+                            <textarea name="areas_for_improvement" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="สิ่งที่ควรปรับปรุงหรือพัฒนาเพิ่มเติม..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">บริการเพิ่มเติมที่ได้รับ</label>
+                            <textarea name="additional_services_received" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="บริการหรือคำแนะนำเพิ่มเติมที่ได้รับ..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ปัญหาที่พบ (ถ้ามี)</label>
+                            <textarea name="problems_encountered" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ปัญหาหรือความไม่สะดวกที่พบ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience and Recommendation -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">❤️ ประสบการณ์และคำแนะนำ</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">เหตุผลที่จะแนะนำ</label>
+                            <textarea name="recommendation_reason" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="เหตุผลที่จะแนะนำผู้ให้บริการรายนี้..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">อธิบายประสบการณ์โดยรวม</label>
+                            <textarea name="overall_experience_description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="อธิบายประสบการณ์การใช้บริการโดยรวม..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">สิ่งที่ชอบมากที่สุด</label>
+                            <textarea name="favorite_aspect" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="สิ่งที่ชอบมากที่สุดในการให้บริการ..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ข้อเสนอแนะสำหรับผู้ให้บริการ</label>
+                            <textarea name="suggestion_for_provider" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ข้อเสนอแนะเพื่อปรับปรุงการให้บริการ..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ข้อเสนอแนะสำหรับแพลตฟอร์ม</label>
+                            <textarea name="platform_feedback" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="ข้อเสนอแนะเพื่อปรับปรุงแพลตฟอร์ม..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" id="submitBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-medium text-lg">
+                        ส่งแบบประเมิน
+                    </button>
+                </div>
+            </form>
+
+            <div id="successMessage" class="hidden text-center py-8">
+                <div class="text-green-600 text-6xl mb-4">✅</div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">ขอบคุณสำหรับการประเมิน!</h2>
+                <p class="text-gray-600">แบบประเมินได้รับการบันทึกเรียบร้อยแล้ว</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Star rating functionality
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.dataset.rating);
+                const field = this.dataset.field;
+                const stars = document.querySelectorAll(\`[data-field="\${field}"]\`);
+                const hiddenInput = document.querySelector(\`input[name="\${field}"]\`);
+                const textSpan = document.getElementById(\`\${field}_text\`);
+                
+                hiddenInput.value = rating;
+                textSpan.textContent = \`\${rating} ดาว\`;
+                
+                stars.forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Form submission
+        async function submitForm(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('customerForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังส่ง...';
+            
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (key === 'service_exceeded_expectations' || key === 'would_recommend' || key === 'would_hire_again') {
+                    data[key] = true;
+                } else if (key.includes('rating') || key.includes('quality') || key.includes('timeliness') || 
+                          key.includes('communication') || key.includes('professionalism') || 
+                          key.includes('money') || key.includes('satisfaction')) {
+                    data[key] = parseInt(value);
+                } else {
+                    data[key] = value || null;
+                }
+            }
+            
+            // Add unchecked checkboxes
+            if (!formData.has('service_exceeded_expectations')) data.service_exceeded_expectations = false;
+            if (!formData.has('would_recommend')) data.would_recommend = false;
+            if (!formData.has('would_hire_again')) data.would_hire_again = false;
+            
+            try {
+                const response = await fetch(\`/api/questionnaires/${matchId}/customer-questionnaire\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    form.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+                } else {
+                    alert('เกิดข้อผิดพลาดในการส่งข้อมูล: ' + (result.error || 'ไม่ทราบสาเหตุ'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'ส่งแบบประเมิน';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ส่งแบบประเมิน';
+            }
+        }
+
+        function createStarRating(field, label) {
+            return \`
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">\${label}</label>
+                    <div class="star-rating">
+                        <input type="hidden" name="\${field}" value="5">
+                        <span class="star active" data-rating="1" data-field="\${field}">⭐</span>
+                        <span class="star active" data-rating="2" data-field="\${field}">⭐</span>
+                        <span class="star active" data-rating="3" data-field="\${field}">⭐</span>
+                        <span class="star active" data-rating="4" data-field="\${field}">⭐</span>
+                        <span class="star active" data-rating="5" data-field="\${field}">⭐</span>
+                        <span class="ml-2 text-sm text-gray-600" id="\${field}_text">5 ดาว</span>
+                    </div>
+                </div>
+            \`;
+        }
+    </script>
+</body>
+</html>
+  `;
+
+  // Helper function to create star rating HTML
+  function createStarRating(field, label) {
+    return `
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">${label}</label>
+            <div class="star-rating">
+                <input type="hidden" name="${field}" value="5">
+                <span class="star active" data-rating="1" data-field="${field}">⭐</span>
+                <span class="star active" data-rating="2" data-field="${field}">⭐</span>
+                <span class="star active" data-rating="3" data-field="${field}">⭐</span>
+                <span class="star active" data-rating="4" data-field="${field}">⭐</span>
+                <span class="star active" data-rating="5" data-field="${field}">⭐</span>
+                <span class="ml-2 text-sm text-gray-600" id="${field}_text">5 ดาว</span>
+            </div>
+        </div>
+    `;
+  }
+
+  res.send(html);
+});
+
 // Get questionnaire statistics
 router.get('/stats', (req, res) => {
   const queries = {

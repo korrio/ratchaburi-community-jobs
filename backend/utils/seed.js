@@ -213,39 +213,50 @@ async function seedDatabase() {
 
     // Create some sample matches
     console.log('🤝 Creating sample matches...');
-    // เด็กชายธนวัฒน์ (provider 1) กับ นางสาวธัญญเรศ (customer 3) - ทำความสะอาดบ้าน
-    await db.run(
-      `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-       VALUES (1, 3, 0.85, 'accepted')`,
-      []
-    );
     
-    // นางสาวศศิวิมล (provider 3) กับ นายภาณุวัชร (customer 4) - เก็บผลไม้
-    await db.run(
-      `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-       VALUES (3, 4, 0.75, 'pending')`,
-      []
-    );
+    // Check if providers and customers exist first
+    const providerCount = await db.get('SELECT COUNT(*) as count FROM service_providers');
+    const customerCount = await db.get('SELECT COUNT(*) as count FROM customers');
     
-    // นายธนาธิป (provider 2) กับ นางสาวตรีชฎา (customer 1) - ตัดหญ้า
-    await db.run(
-      `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-       VALUES (2, 1, 0.70, 'completed')`,
-      []
-    );
+    console.log(`Found ${providerCount.count} providers and ${customerCount.count} customers`);
+    
+    if (providerCount.count >= 3 && customerCount.count >= 4) {
+      // เด็กชายธนวัฒน์ (provider 1) กับ นางสาวธัญญเรศ (customer 3) - ทำความสะอาดบ้าน
+      await db.run(
+        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
+         VALUES (1, 3, 0.85, 'accepted')`,
+        []
+      );
+      
+      // นางสาวศศิวิมล (provider 3) กับ นายภาณุวัชร (customer 4) - เก็บผลไม้
+      await db.run(
+        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
+         VALUES (3, 4, 0.75, 'pending')`,
+        []
+      );
+      
+      // นายธนาธิป (provider 2) กับ นางสาวตรีชฎา (customer 1) - ตัดหญ้า
+      await db.run(
+        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
+         VALUES (2, 1, 0.70, 'completed')`,
+        []
+      );
+    } else {
+      console.log('⚠️ Skipping matches creation - insufficient providers or customers');
+    }
 
     console.log('✅ Database seeding completed successfully!');
     
     // Display summary
-    const providerCount = await db.get('SELECT COUNT(*) as count FROM service_providers');
-    const customerCount = await db.get('SELECT COUNT(*) as count FROM customers');
+    const finalProviderCount = await db.get('SELECT COUNT(*) as count FROM service_providers');
+    const finalCustomerCount = await db.get('SELECT COUNT(*) as count FROM customers');
     const categoryCount = await db.get('SELECT COUNT(*) as count FROM service_categories');
     const matchCount = await db.get('SELECT COUNT(*) as count FROM job_matches');
 
     console.log('\n📊 Database Summary:');
     console.log(`   - Service Categories: ${categoryCount.count}`);
-    console.log(`   - Service Providers: ${providerCount.count}`);
-    console.log(`   - Customers: ${customerCount.count}`);
+    console.log(`   - Service Providers: ${finalProviderCount.count}`);
+    console.log(`   - Customers: ${finalCustomerCount.count}`);
     console.log(`   - Job Matches: ${matchCount.count}`);
 
     return {
@@ -253,8 +264,8 @@ async function seedDatabase() {
       message: 'Database seeded successfully',
       data: {
         categories: categoryCount.count,
-        providers: providerCount.count,
-        customers: customerCount.count,
+        providers: finalProviderCount.count,
+        customers: finalCustomerCount.count,
         matches: matchCount.count
       }
     };

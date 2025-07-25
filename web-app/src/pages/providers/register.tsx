@@ -13,7 +13,8 @@ import {
   Save,
   AlertCircle,
   CheckCircle,
-  MessageCircle
+  MessageCircle,
+  CreditCard
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { apiEndpoints } from '@/utils/api';
@@ -35,6 +36,9 @@ const ProviderRegisterPage: React.FC = () => {
     price_range: '',
     available_days: '',
     available_hours: '',
+    bank_account_number: '',
+    bank_account_name: '',
+    bank_name: '',
     is_active: true
   });
 
@@ -432,6 +436,77 @@ const ProviderRegisterPage: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Banking Information */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <CreditCard className="h-5 w-5 mr-2" />
+              ข้อมูลธนาคาร
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  เลขที่บัญชีธนาคาร
+                </label>
+                <input
+                  type="text"
+                  name="bank_account_number"
+                  value={formData.bank_account_number}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="xxx-x-xxxxx-x"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ชื่อบัญชี
+                </label>
+                <input
+                  type="text"
+                  name="bank_account_name"
+                  value={formData.bank_account_name}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="ชื่อเจ้าของบัญชี"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ธนาคาร
+                </label>
+                <select
+                  name="bank_name"
+                  value={formData.bank_name}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">เลือกธนาคาร</option>
+                  <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ</option>
+                  <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย</option>
+                  <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย</option>
+                  <option value="ธนาคารทหารไทยธนชาต">ธนาคารทหารไทยธนชาต</option>
+                  <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์</option>
+                  <option value="ธนาคารกรุงศรีอยุธยา">ธนาคารกรุงศรีอยุธยา</option>
+                  <option value="ธนาคารเกียรตินาคินภัทร">ธนาคารเกียรตินาคินภัทร</option>
+                  <option value="ธนาคารซีไอเอ็มบี ไทย">ธนาคารซีไอเอ็มบี ไทย</option>
+                  <option value="ธนาคารยูโอบี">ธนาคารยูโอบี</option>
+                  <option value="ธนาคารแลนด์ แอนด์ เฮ้าส์">ธนาคารแลนด์ แอนด์ เฮ้าส์</option>
+                  <option value="ธนาคารอาคารสงเคราะห์">ธนาคารอาคารสงเคราะห์</option>
+                  <option value="ธนาคารออมสิน">ธนาคารออมสิน</option>
+                  <option value="ธนาคารอิสลามแห่งประเทศไทย">ธนาคารอิสลามแห่งประเทศไทย</option>
+                  <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร</option>
+                  <option value="ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย">ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย</option>
+                </select>
+              </div>
+            </div>
+            
+            <p className="mt-4 text-sm text-gray-500">
+              ข้อมูลธนาคารจะใช้สำหรับการรับชำระเงินค่าบริการ (ไม่บังคับ)
+            </p>
           </div>
 
           {/* Status */}

@@ -39,6 +39,9 @@ export interface ServiceProvider {
   price_range?: string;
   available_days?: string;
   available_hours?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
+  bank_name?: string;
   rating: number;
   total_jobs: number;
   is_active: boolean;
@@ -146,6 +149,9 @@ export interface ProviderFormData {
   price_range?: string;
   available_days?: string;
   available_hours?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
+  bank_name?: string;
   is_active: boolean;
 }
 
@@ -162,6 +168,9 @@ export interface ProviderFormErrors {
   price_range?: string;
   available_days?: string;
   available_hours?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
+  bank_name?: string;
   is_active?: string;
 }
 
