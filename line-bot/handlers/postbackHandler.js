@@ -86,6 +86,9 @@ class PostbackHandler {
       case 'submit_customer_feedback':
         return this.submitCustomerFeedback(client, replyToken, params);
       
+      case 'show_register_options':
+        return this.showRegistrationOptions(client, replyToken);
+      
       default:
         return this.handleUnknownPostback(client, replyToken);
     }
@@ -866,6 +869,11 @@ class PostbackHandler {
       case 'low': return 'ไม่เร่งด่วน 🟢';
       default: return 'ไม่ระบุ';
     }
+  }
+
+  async showRegistrationOptions(client, replyToken) {
+    const registrationMessage = templates.createRegistrationOptions();
+    return client.replyMessage(replyToken, registrationMessage);
   }
 }
 

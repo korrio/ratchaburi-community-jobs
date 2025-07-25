@@ -17,6 +17,7 @@ class MessageHandler {
       'จับคู่งาน': () => this.autoMatch(client, replyToken),
       'ลงทะเบียนผู้ให้บริการ': () => this.registerProvider(client, replyToken),
       'ลงทะเบียนงาน': () => this.registerCustomer(client, replyToken),
+      'ลงทะเบียน': () => this.showRegistrationOptions(client, replyToken),
       'ดูงานของฉัน': () => this.viewMyJobs(client, replyToken, userId),
       'งานของฉัน': () => this.viewMyJobs(client, replyToken, userId),
       'ช่วยเหลือ': () => this.sendHelpMessage(client, replyToken),
@@ -352,8 +353,7 @@ class MessageHandler {
             '• "ค้นหางาน" - ค้นหางานที่ต้องการจ้าง\n' +
             '• "ดูงานของฉัน" - ดูงานที่กำลังดำเนินการ\n' +
             '• "จับคู่งาน" - ดูการจับคู่งานอัตโนมัติ\n' +
-            '• "ลงทะเบียนผู้ให้บริการ" - ลงทะเบียนเป็นผู้ให้บริการ\n' +
-            '• "ลงทะเบียนงาน" - โพสต์งานที่ต้องการจ้าง\n' +
+            '• "ลงทะเบียน" - ลงทะเบียนผู้ให้บริการหรือผู้จ้าง\n' +
             '• "ช่วยเหลือ" - ดูคำแนะนำการใช้งาน',
       quickReply: {
         items: [
@@ -377,8 +377,8 @@ class MessageHandler {
             type: 'action',
             action: {
               type: 'postback',
-              label: 'ดูงานของฉัน',
-              data: 'action=view_my_jobs'
+              label: 'ลงทะเบียน',
+              data: 'action=show_register_options'
             }
           },
           {
@@ -394,6 +394,11 @@ class MessageHandler {
     };
 
     return client.replyMessage(replyToken, message);
+  }
+
+  async showRegistrationOptions(client, replyToken) {
+    const registrationMessage = templates.createRegistrationOptions();
+    return client.replyMessage(replyToken, registrationMessage);
   }
 }
 

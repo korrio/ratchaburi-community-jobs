@@ -4,7 +4,7 @@ class MessageTemplates {
     
     return {
       type: 'flex',
-      altText: 'ยินดีต้อนรับสู่ราชบุรีงานชุมชน',
+      altText: 'ยินดีต้อนรับสู่ JOB ชุมชน',
       contents: {
         type: 'bubble',
         // hero: {
@@ -27,7 +27,7 @@ class MessageTemplates {
             },
             {
               type: 'text',
-              text: 'ราชบุรีงานชุมชน',
+              text: 'JOB ชุมชน',
               weight: 'bold',
               size: 'xxl',
               color: '#1e293b',
@@ -35,7 +35,7 @@ class MessageTemplates {
             },
             {
               type: 'text',
-              text: 'แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี',
+              text: 'แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชน',
               size: 'sm',
               color: '#64748b',
               margin: 'lg',
@@ -67,7 +67,7 @@ class MessageTemplates {
               color: '#0ea5e9',
               action: {
                 type: 'postback',
-                label: 'ค้นหาผู้ให้บริการ',
+                label: 'จ้างงาน (ลูกค้า)',
                 data: 'action=search_providers'
               }
             },
@@ -77,8 +77,18 @@ class MessageTemplates {
               height: 'sm',
               action: {
                 type: 'postback',
-                label: 'ค้นหางานที่ต้องการจ้าง',
+                label: 'หางาน (นักเรียน)',
                 data: 'action=search_jobs'
+              }
+            },
+            {
+              type: 'button',
+              style: 'secondary',
+              height: 'sm',
+              action: {
+                type: 'postback',
+                label: '📝 ลงทะเบียน',
+                data: 'action=show_register_options'
               }
             }
           ]
@@ -1248,6 +1258,116 @@ class MessageTemplates {
       default:
         return 'ไม่ระบุ';
     }
+  }
+
+  createRegistrationOptions() {
+    return {
+      type: 'flex',
+      altText: 'ลงทะเบียน',
+      contents: {
+        type: 'bubble',
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: '📝 ลงทะเบียน',
+              weight: 'bold',
+              size: 'xl',
+              color: '#0ea5e9',
+              align: 'center'
+            },
+            {
+              type: 'text',
+              text: 'เลือกประเภทการลงทะเบียน',
+              size: 'md',
+              color: '#64748b',
+              align: 'center',
+              margin: 'sm'
+            },
+            {
+              type: 'separator',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: '🔧 ลงทะเบียนเป็นผู้ให้บริการ',
+              weight: 'bold',
+              size: 'md',
+              color: '#374151',
+              margin: 'lg'
+            },
+            {
+              type: 'text',
+              text: 'สำหรับช่าง คนงาน และผู้ให้บริการต่างๆ',
+              size: 'sm',
+              color: '#64748b',
+              margin: 'xs',
+              wrap: true
+            },
+            {
+              type: 'separator',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: '👤 ลงทะเบียนเป็นผู้จ้าง',
+              weight: 'bold',
+              size: 'md',
+              color: '#374151',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: 'สำหรับผู้ที่ต้องการจ้างงาน หรือโพสต์งาน',
+              size: 'sm',
+              color: '#64748b',
+              margin: 'xs',
+              wrap: true
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'sm',
+              color: '#0ea5e9',
+              action: {
+                type: 'uri',
+                label: '🔧 ลงทะเบียนผู้ให้บริการ',
+                uri: 'https://ratchaburi-community-jobs.vercel.app/providers/register'
+              }
+            },
+            {
+              type: 'button',
+              style: 'secondary',
+              height: 'sm',
+              action: {
+                type: 'uri',
+                label: '👤 ลงทะเบียนผู้จ้าง (ลูกค้า)',
+                uri: 'https://ratchaburi-community-jobs.vercel.app/customers/register'
+              }
+            },
+            {
+              type: 'button',
+              style: 'secondary',
+              height: 'sm',
+              action: {
+                type: 'postback',
+                label: '🔙 กลับเมนูหลัก',
+                data: 'action=help'
+              }
+            }
+          ]
+        }
+      }
+    };
   }
 }
 

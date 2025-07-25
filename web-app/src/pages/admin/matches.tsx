@@ -297,7 +297,7 @@ const AdminMatches: React.FC = () => {
               yellow: 'text-yellow-500',
               green: 'text-green-500',
               purple: 'text-purple-500'
-            }[step.color];
+            }[step.color] || 'text-gray-500';
           }
           
           return (
