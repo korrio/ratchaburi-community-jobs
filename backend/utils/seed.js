@@ -169,25 +169,59 @@ async function seedDatabase() {
   try {
     console.log('🌱 Starting database seeding...');
 
+    // Clear existing data first
+    console.log('🧹 Clearing existing data...');
+    await db.run('DELETE FROM job_matches');
+    await db.run('DELETE FROM service_providers');
+    await db.run('DELETE FROM customers');
+    await db.run('DELETE FROM service_categories');
+    
     // Insert service categories
     console.log('📝 Inserting service categories...');
     for (const category of sampleData.serviceCategories) {
       await db.run(
-        'INSERT OR IGNORE INTO service_categories (name, description, icon) VALUES (?, ?, ?)',
+        'INSERT INTO service_categories (name, description, icon) VALUES (?, ?, ?)',
         [category.name, category.description, category.icon]
       );
     }
 
-    // Insert service providers
+    // Get category mappings
+    const categories = await db.all('SELECT id, name FROM service_categories');
+    const categoryMap = {};
+    categories.forEach(cat => {
+      categoryMap[cat.name] = cat.id;
+    });
+    
     console.log('👨‍💼 Inserting service providers...');
     for (const provider of sampleData.serviceProviders) {
+      // Map old category IDs to new ones
+      let categoryId;
+      switch (provider.service_category_id) {
+        case 1: categoryId = categoryMap['ทำความสะอาดทั่วไป']; break;
+        case 2: categoryId = categoryMap['รับจ้างตัดหญ้า']; break;
+        case 3: categoryId = categoryMap['รับจ้างเก็บผลไม้']; break;
+        case 4: categoryId = categoryMap['ค้าขาย']; break;
+        case 5: categoryId = categoryMap['ช่างไฟฟ้า']; break;
+        case 6: categoryId = categoryMap['ช่างประปา']; break;
+        case 7: categoryId = categoryMap['ช่างก่อสร้าง']; break;
+        case 8: categoryId = categoryMap['ช่างแอร์']; break;
+        case 9: categoryId = categoryMap['ช่างตัดผม']; break;
+        case 10: categoryId = categoryMap['ช่างซ่อมรถ']; break;
+        default: categoryId = categoryMap['ทำความสะอาดทั่วไป'];
+      }
+      
+      if (!categoryId) {
+        console.log(`⚠️ Warning: Could not find category for provider ${provider.name}`);
+        continue;
+      }
+      
       await db.run(
         `INSERT INTO service_providers (
           name, phone, line_id, service_category_id, location, district, subdistrict,
           description, price_range, available_days, available_hours, rating, total_jobs
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          provider.name, provider.phone, provider.line_id, provider.service_category_id,
+          provider.name, provider.phone, provider.line_id, categoryId,
           provider.location, provider.district, provider.subdistrict, provider.description,
           provider.price_range, provider.available_days, provider.available_hours,
           provider.rating, provider.total_jobs
@@ -195,9 +229,24 @@ async function seedDatabase() {
       );
     }
 
-    // Insert customers
+    // Insert customers with proper category mapping
     console.log('🏠 Inserting customers...');
     for (const customer of sampleData.customers) {
+      // Map old category IDs to new ones
+      let categoryId;
+      switch (customer.service_category_id) {
+        case 1: categoryId = categoryMap['ทำความสะอาดทั่วไป']; break;
+        case 2: categoryId = categoryMap['รับจ้างตัดหญ้า']; break;
+        case 3: categoryId = categoryMap['รับจ้างเก็บผลไม้']; break;
+        case 4: categoryId = categoryMap['ค้าขาย']; break;
+        default: categoryId = categoryMap['ทำความสะอาดทั่วไป'];
+      }
+      
+      if (!categoryId) {
+        console.log(`⚠️ Warning: Could not find category for customer ${customer.name}`);
+        continue;
+      }
+      
       await db.run(
         `INSERT INTO customers (
           name, phone, line_id, location, district, subdistrict, service_category_id,
@@ -205,7 +254,7 @@ async function seedDatabase() {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           customer.name, customer.phone, customer.line_id, customer.location,
-          customer.district, customer.subdistrict, customer.service_category_id,
+          customer.district, customer.subdistrict, categoryId,
           customer.job_description, customer.budget_range, customer.urgency_level
         ]
       );
@@ -214,33 +263,28 @@ async function seedDatabase() {
     // Create some sample matches
     console.log('🤝 Creating sample matches...');
     
-    // Check if providers and customers exist first
-    const providerCount = await db.get('SELECT COUNT(*) as count FROM service_providers');
-    const customerCount = await db.get('SELECT COUNT(*) as count FROM customers');
+    // Get actual provider and customer IDs
+    const providers = await db.all('SELECT id, name FROM service_providers ORDER BY id LIMIT 6');
+    const customers = await db.all('SELECT id, name FROM customers ORDER BY id LIMIT 4');
     
-    console.log(`Found ${providerCount.count} providers and ${customerCount.count} customers`);
+    console.log(`Found ${providers.length} providers and ${customers.length} customers`);
     
-    if (providerCount.count >= 3 && customerCount.count >= 4) {
-      // เด็กชายธนวัฒน์ (provider 1) กับ นางสาวธัญญเรศ (customer 3) - ทำความสะอาดบ้าน
-      await db.run(
-        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-         VALUES (1, 3, 0.85, 'accepted')`,
-        []
-      );
+    if (providers.length >= 3 && customers.length >= 3) {
+      // Create matches using actual IDs
+      const matches = [
+        { provider_id: providers[0].id, customer_id: customers[0].id, match_score: 0.85, status: 'accepted' },
+        { provider_id: providers[1].id, customer_id: customers[1].id, match_score: 0.75, status: 'pending' },
+        { provider_id: providers[2].id, customer_id: customers[2].id, match_score: 0.70, status: 'completed' }
+      ];
       
-      // นางสาวศศิวิมล (provider 3) กับ นายภาณุวัชร (customer 4) - เก็บผลไม้
-      await db.run(
-        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-         VALUES (3, 4, 0.75, 'pending')`,
-        []
-      );
-      
-      // นายธนาธิป (provider 2) กับ นางสาวตรีชฎา (customer 1) - ตัดหญ้า
-      await db.run(
-        `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
-         VALUES (2, 1, 0.70, 'completed')`,
-        []
-      );
+      for (const match of matches) {
+        await db.run(
+          `INSERT INTO job_matches (provider_id, customer_id, match_score, status)
+           VALUES (?, ?, ?, ?)`,
+          [match.provider_id, match.customer_id, match.match_score, match.status]
+        );
+        console.log(`✅ Created match: Provider ${match.provider_id} <-> Customer ${match.customer_id}`);
+      }
     } else {
       console.log('⚠️ Skipping matches creation - insufficient providers or customers');
     }
