@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import Link from 'next/link';
 import {
@@ -13,15 +13,29 @@ import {
   XCircle,
   AlertCircle,
   BarChart3,
-  Activity
+  Activity,
+  Calendar,
+  Filter
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { apiEndpoints } from '@/utils/api';
 
 const AdminDashboard: React.FC = () => {
+  const [dateFilter, setDateFilter] = useState('30'); // days
+
+  const getDateRange = (days: string) => {
+    const now = new Date();
+    const startDate = new Date();
+    startDate.setDate(now.getDate() - parseInt(days));
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: now.toISOString().split('T')[0]
+    };
+  };
+
   // Fetch statistics
   const { data: statsData, isLoading: isLoadingStats } = useQuery(
-    'admin-stats',
+    ['admin-stats', dateFilter],
     () => apiEndpoints.getMatchStats()
   );
 
@@ -73,6 +87,32 @@ const AdminDashboard: React.FC = () => {
   return (
     <AdminLayout title="Dashboard">
       <div className="space-y-6">
+        {/* Date Filter */}
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <Filter className="h-5 w-5 mr-2" />
+              กรองข้อมูล
+            </h3>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                <select
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="1">วันนี้</option>
+                  <option value="7">7 วันล่าสุด</option>
+                  <option value="30">30 วันล่าสุด</option>
+                  <option value="90">90 วันล่าสุด</option>
+                  <option value="365">1 ปีล่าสุด</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white overflow-hidden shadow rounded-lg">

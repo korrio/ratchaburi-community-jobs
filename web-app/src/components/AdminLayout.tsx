@@ -13,7 +13,8 @@ import {
   LogOut,
   Home,
   Bell,
-  Search
+  Search,
+  BookOpen
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -61,6 +62,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Admin Dash
       href: '/admin/settings',
       icon: Settings,
       current: router.pathname === '/admin/settings'
+    },
+    {
+      name: 'คู่มือการใช้งาน',
+      href: '/admin/guide',
+      icon: BookOpen,
+      current: router.pathname === '/admin/guide'
     }
   ];
 

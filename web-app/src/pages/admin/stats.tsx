@@ -29,9 +29,19 @@ const AdminStats: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
 
+  const getDateRange = (days: string) => {
+    const now = new Date();
+    const startDate = new Date();
+    startDate.setDate(now.getDate() - parseInt(days));
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: now.toISOString().split('T')[0]
+    };
+  };
+
   // Fetch statistics
   const { data: statsData, isLoading: isLoadingStats, refetch: refetchStats } = useQuery(
-    'match-stats',
+    ['match-stats', dateRange],
     () => apiEndpoints.getMatchStats()
   );
 
@@ -162,6 +172,7 @@ const AdminStats: React.FC = () => {
                 onChange={(e) => setDateRange(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
+                <option value="1">วันนี้</option>
                 <option value="7">7 วันล่าสุด</option>
                 <option value="30">30 วันล่าสุด</option>
                 <option value="90">90 วันล่าสุด</option>
