@@ -13,6 +13,8 @@ const customerSchema = Joi.object({
   service_category_id: Joi.number().integer().required(),
   job_description: Joi.string().required().max(1000),
   budget_range: Joi.string().optional().max(100),
+  preferred_date: Joi.string().optional().allow(''),
+  preferred_time: Joi.string().optional().allow(''),
   urgency_level: Joi.string().valid('low', 'medium', 'high').default('medium'),
   preferred_contact: Joi.string().valid('phone', 'line', 'both').default('phone'),
   is_active: Joi.boolean().default(true)
@@ -215,16 +217,17 @@ class CustomerController {
       const sql = `
         INSERT INTO customers (
           name, phone, line_id, location, district, subdistrict, province,
-          service_category_id, job_description, budget_range, urgency_level,
-          preferred_contact, is_active
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          service_category_id, job_description, budget_range, preferred_date,
+          preferred_time, urgency_level, preferred_contact, is_active
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await db.run(sql, [
         value.name, value.phone, value.line_id, value.location,
         value.district, value.subdistrict, value.province,
         value.service_category_id, value.job_description, value.budget_range,
-        value.urgency_level, value.preferred_contact, value.is_active
+        value.preferred_date, value.preferred_time, value.urgency_level,
+        value.preferred_contact, value.is_active
       ]);
 
       // Try to find matching providers automatically
@@ -308,8 +311,9 @@ class CustomerController {
         UPDATE customers SET
           name = ?, phone = ?, line_id = ?, location = ?, district = ?,
           subdistrict = ?, province = ?, service_category_id = ?,
-          job_description = ?, budget_range = ?, urgency_level = ?,
-          preferred_contact = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+          job_description = ?, budget_range = ?, preferred_date = ?,
+          preferred_time = ?, urgency_level = ?, preferred_contact = ?,
+          is_active = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `;
 
@@ -317,7 +321,8 @@ class CustomerController {
         value.name, value.phone, value.line_id, value.location,
         value.district, value.subdistrict, value.province,
         value.service_category_id, value.job_description, value.budget_range,
-        value.urgency_level, value.preferred_contact, value.is_active, id
+        value.preferred_date, value.preferred_time, value.urgency_level,
+        value.preferred_contact, value.is_active, id
       ]);
 
       if (result.changes === 0) {

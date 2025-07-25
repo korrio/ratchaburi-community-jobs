@@ -32,6 +32,8 @@ const CustomerRegisterPage: React.FC = () => {
     service_category_id: 0,
     job_description: '',
     budget_range: '',
+    preferred_date: '',
+    preferred_time: '',
     urgency_level: 'medium',
     preferred_contact: 'phone',
     is_active: true
@@ -448,6 +450,57 @@ const CustomerRegisterPage: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              {/* Date and Time Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Clock className="h-4 w-4 inline mr-1" />
+                    วันที่ต้องการจ้าง (ไม่บังคับ)
+                  </label>
+                  <input
+                    type="date"
+                    name="preferred_date"
+                    value={formData.preferred_date}
+                    onChange={handleInputChange}
+                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      errors.preferred_date ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                  {errors.preferred_date && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {errors.preferred_date}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Clock className="h-4 w-4 inline mr-1" />
+                    เวลาที่ต้องการจ้าง (ไม่บังคับ)
+                  </label>
+                  <input
+                    type="time"
+                    name="preferred_time"
+                    value={formData.preferred_time}
+                    onChange={handleInputChange}
+                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      errors.preferred_time ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.preferred_time && (
+                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {errors.preferred_time}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    ระบุช่วงเวลาที่ต้องการให้เริ่มงาน
+                  </p>
                 </div>
               </div>
             </div>

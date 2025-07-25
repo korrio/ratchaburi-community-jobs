@@ -99,13 +99,13 @@ const HomePage: React.FC = () => {
                 ดูงานที่ต้องการจ้าง
               </Link>
               <a
-                href="https://line.me/R/ti/p/@815ctqaz"
+                href="https://lin.ee/9G2yLV0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg font-medium transition-colors flex items-center justify-center text-white"
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
-                คุยกับ Chatbot
+                โทรเลย
               </a>
             </div>
           </div>

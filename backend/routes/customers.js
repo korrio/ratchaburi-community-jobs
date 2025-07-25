@@ -42,6 +42,12 @@ const customerController = require('../controllers/customerController');
  *         budget_range:
  *           type: string
  *           description: Budget range
+ *         preferred_date:
+ *           type: string
+ *           description: Preferred work date
+ *         preferred_time:
+ *           type: string
+ *           description: Preferred work time
  *         urgency_level:
  *           type: string
  *           enum: [low, medium, high]

@@ -80,6 +80,8 @@ class Database {
         service_category_id INTEGER,
         job_description TEXT,
         budget_range TEXT,
+        preferred_date TEXT,
+        preferred_time TEXT,
         urgency_level TEXT DEFAULT 'medium',
         preferred_contact TEXT DEFAULT 'phone',
         is_active BOOLEAN DEFAULT TRUE,
@@ -174,6 +176,41 @@ class Database {
     });
 
     console.log('✅ Database tables created successfully');
+    
+    // Run migrations for new fields
+    this.runMigrations();
+  }
+
+  runMigrations() {
+    // Add preferred_date and preferred_time columns to customers table if they don't exist
+    this.db.all("PRAGMA table_info(customers)", (err, columns) => {
+      if (err) {
+        console.error('Error checking customers table structure:', err);
+        return;
+      }
+
+      const columnNames = columns.map(col => col.name);
+      
+      if (!columnNames.includes('preferred_date')) {
+        this.db.run("ALTER TABLE customers ADD COLUMN preferred_date TEXT", (err) => {
+          if (err) {
+            console.error('Error adding preferred_date column:', err);
+          } else {
+            console.log('✅ Added preferred_date column to customers table');
+          }
+        });
+      }
+
+      if (!columnNames.includes('preferred_time')) {
+        this.db.run("ALTER TABLE customers ADD COLUMN preferred_time TEXT", (err) => {
+          if (err) {
+            console.error('Error adding preferred_time column:', err);
+          } else {
+            console.log('✅ Added preferred_time column to customers table');
+          }
+        });
+      }
+    });
   }
 
   // Helper method to run queries with promises

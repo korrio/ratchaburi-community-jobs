@@ -65,6 +65,8 @@ export interface Customer {
   category_icon?: string;
   job_description: string;
   budget_range?: string;
+  preferred_date?: string;
+  preferred_time?: string;
   urgency_level: 'low' | 'medium' | 'high';
   preferred_contact: 'phone' | 'line' | 'both';
   is_active: boolean;
@@ -185,6 +187,8 @@ export interface CustomerFormData {
   service_category_id: number;
   job_description: string;
   budget_range?: string;
+  preferred_date?: string;
+  preferred_time?: string;
   urgency_level: 'low' | 'medium' | 'high';
   preferred_contact: 'phone' | 'line' | 'both';
   is_active: boolean;
@@ -201,6 +205,8 @@ export interface CustomerFormErrors {
   service_category_id?: string;
   job_description?: string;
   budget_range?: string;
+  preferred_date?: string;
+  preferred_time?: string;
   urgency_level?: string;
   preferred_contact?: string;
   is_active?: string;
