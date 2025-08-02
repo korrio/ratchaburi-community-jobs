@@ -788,13 +788,10 @@ const AdminMatches: React.FC = () => {
                     สถานะงาน 
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {/*เงื่อนไขการจับคู่ (พื้นที่ • ราคา • เวลา)*/}
+                    เงื่อนไขการจับคู่ <br/>(พื้นที่ • ราคา • เวลา)
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     หมวดหมู่
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    คะแนนความเข้ากัน
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ความคืบหน้างาน
@@ -813,13 +810,13 @@ const AdminMatches: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       กำลังโหลด...
                     </td>
                   </tr>
                 ) : matches.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       ไม่พบข้อมูล
                     </td>
                   </tr>
@@ -857,19 +854,6 @@ const AdminMatches: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 w-16 bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-primary-600 h-2 rounded-full"
-                                style={{ width: `${match.match_score * 100}%` }}
-                              />
-                            </div>
-                            <div className="ml-2 text-sm text-gray-900">
-                              {(match.match_score * 100).toFixed(0)}%
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-2">
                             {renderJobProgressIndicator(match.id)}
                             <div className="text-xs text-gray-500">
@@ -883,7 +867,7 @@ const AdminMatches: React.FC = () => {
                               {getJobProgressText(jobStage)}
                             </div>
                             <div className="text-xs text-gray-500">
-                              อัพเดท: {new Date().toLocaleDateString('th-TH')}
+                              อัพเดท: {new Date().toLocaleString('th-TH')}
                             </div>
                           </div>
                         </td>
