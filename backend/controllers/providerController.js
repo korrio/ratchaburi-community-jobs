@@ -332,6 +332,180 @@ class ProviderController {
       });
     }
   }
+
+  // Create service category
+  async createCategory(req, res) {
+    try {
+      const { name, description, icon } = req.body;
+      
+      if (!name) {
+        return res.status(400).json({
+          success: false,
+          message: 'Category name is required'
+        });
+      }
+
+      // Check if category name already exists
+      const existingCategory = await db.get(
+        'SELECT id FROM service_categories WHERE name = ?',
+        [name]
+      );
+
+      if (existingCategory) {
+        return res.status(400).json({
+          success: false,
+          message: 'Category name already exists'
+        });
+      }
+
+      const result = await db.run(
+        'INSERT INTO service_categories (name, description, icon) VALUES (?, ?, ?)',
+        [name, description || '', icon || '📋']
+      );
+
+      const newCategory = await db.get(
+        'SELECT * FROM service_categories WHERE id = ?',
+        [result.id]
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Category created successfully',
+        data: newCategory
+      });
+    } catch (error) {
+      console.error('Error creating category:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create category',
+        error: error.message
+      });
+    }
+  }
+
+  // Update service category
+  async updateCategory(req, res) {
+    try {
+      const { id } = req.params;
+      const { name, description, icon } = req.body;
+
+      if (!name) {
+        return res.status(400).json({
+          success: false,
+          message: 'Category name is required'
+        });
+      }
+
+      // Check if category exists
+      const existingCategory = await db.get(
+        'SELECT * FROM service_categories WHERE id = ?',
+        [id]
+      );
+
+      if (!existingCategory) {
+        return res.status(404).json({
+          success: false,
+          message: 'Category not found'
+        });
+      }
+
+      // Check if name already exists (excluding current category)
+      const duplicateCategory = await db.get(
+        'SELECT id FROM service_categories WHERE name = ? AND id != ?',
+        [name, id]
+      );
+
+      if (duplicateCategory) {
+        return res.status(400).json({
+          success: false,
+          message: 'Category name already exists'
+        });
+      }
+
+      await db.run(
+        'UPDATE service_categories SET name = ?, description = ?, icon = ? WHERE id = ?',
+        [name, description || '', icon || '📋', id]
+      );
+
+      const updatedCategory = await db.get(
+        'SELECT * FROM service_categories WHERE id = ?',
+        [id]
+      );
+
+      res.json({
+        success: true,
+        message: 'Category updated successfully',
+        data: updatedCategory
+      });
+    } catch (error) {
+      console.error('Error updating category:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update category',
+        error: error.message
+      });
+    }
+  }
+
+  // Delete service category
+  async deleteCategory(req, res) {
+    try {
+      const { id } = req.params;
+
+      // Check if category exists
+      const existingCategory = await db.get(
+        'SELECT * FROM service_categories WHERE id = ?',
+        [id]
+      );
+
+      if (!existingCategory) {
+        return res.status(404).json({
+          success: false,
+          message: 'Category not found'
+        });
+      }
+
+      // Check if category is being used by any providers
+      const providersCount = await db.get(
+        'SELECT COUNT(*) as count FROM service_providers WHERE service_category_id = ?',
+        [id]
+      );
+
+      if (providersCount.count > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot delete category. ${providersCount.count} provider(s) are using this category`
+        });
+      }
+
+      // Check if category is being used by any customers
+      const customersCount = await db.get(
+        'SELECT COUNT(*) as count FROM customers WHERE service_category_id = ?',
+        [id]
+      );
+
+      if (customersCount.count > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot delete category. ${customersCount.count} customer(s) are using this category`
+        });
+      }
+
+      await db.run('DELETE FROM service_categories WHERE id = ?', [id]);
+
+      res.json({
+        success: true,
+        message: 'Category deleted successfully'
+      });
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete category',
+        error: error.message
+      });
+    }
+  }
 }
 
 module.exports = new ProviderController();

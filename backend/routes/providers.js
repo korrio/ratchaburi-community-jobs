@@ -180,6 +180,92 @@ router.get('/categories', providerController.getCategories);
 
 /**
  * @swagger
+ * /api/providers/categories:
+ *   post:
+ *     summary: Create new service category
+ *     tags: [Providers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Category created successfully
+ *       400:
+ *         description: Validation error
+ */
+router.post('/categories', providerController.createCategory);
+
+/**
+ * @swagger
+ * /api/providers/categories/{id}:
+ *   put:
+ *     summary: Update service category
+ *     tags: [Providers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *       404:
+ *         description: Category not found
+ *       400:
+ *         description: Validation error
+ */
+router.put('/categories/:id', providerController.updateCategory);
+
+/**
+ * @swagger
+ * /api/providers/categories/{id}:
+ *   delete:
+ *     summary: Delete service category
+ *     tags: [Providers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *       404:
+ *         description: Category not found
+ *       400:
+ *         description: Cannot delete category with existing providers
+ */
+router.delete('/categories/:id', providerController.deleteCategory);
+
+/**
+ * @swagger
  * /api/providers/{id}:
  *   get:
  *     summary: Get provider by ID
