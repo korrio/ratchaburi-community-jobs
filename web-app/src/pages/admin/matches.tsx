@@ -47,6 +47,7 @@ const AdminMatches: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isProviderQuestionnaireOpen, setIsProviderQuestionnaireOpen] = useState(false);
   const [isCustomerQuestionnaireOpen, setIsCustomerQuestionnaireOpen] = useState(false);
+  const [updateMode, setUpdateMode] = useState<'status' | 'progress'>('progress');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<'match_date' | 'match_score' | 'response_date'>('match_date');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
@@ -57,6 +58,22 @@ const AdminMatches: React.FC = () => {
     customer_response: '',
     rating: undefined,
     feedback: ''
+  });
+
+  const [jobProgressData, setJobProgressData] = useState<{
+    stage: string;
+    notes: string;
+    location_info: string;
+    estimated_duration: string;
+    actual_duration: string;
+    final_cost: number | undefined;
+  }>({
+    stage: 'pending',
+    notes: '',
+    location_info: '',
+    estimated_duration: '',
+    actual_duration: '',
+    final_cost: undefined
   });
 
   const [createMatchData, setCreateMatchData] = useState({
@@ -78,7 +95,7 @@ const AdminMatches: React.FC = () => {
   );
 
   // Fetch job progress data
-  const { data: jobProgressData } = useQuery(
+  const { data: jobProgressResponse } = useQuery(
     'job-progress',
     () => apiEndpoints.getJobProgress(),
     { keepPreviousData: true }
@@ -130,6 +147,33 @@ const AdminMatches: React.FC = () => {
     }
   );
 
+  // Update job progress mutation
+  const updateJobProgressMutation = useMutation(
+    ({ matchId, data }: { matchId: string; data: any }) => apiEndpoints.updateJobProgress(matchId, data),
+    {
+      onSuccess: (response, variables) => {
+        queryClient.invalidateQueries('admin-matches');
+        queryClient.invalidateQueries('job-progress');
+        setIsModalOpen(false);
+        
+        // Trigger questionnaires when job is completed or closed
+        if (variables.data.stage === 'completed') {
+          setTimeout(() => {
+            setIsCustomerQuestionnaireOpen(true);
+          }, 500);
+        } else if (variables.data.stage === 'closed') {
+          setTimeout(() => {
+            setIsProviderQuestionnaireOpen(true);
+          }, 500);
+        } else {
+          setSelectedMatch(null);
+          resetUpdateData();
+          resetJobProgressData();
+        }
+      }
+    }
+  );
+
   // Create match mutation
   const createMatchMutation = useMutation(
     (data: any) => apiEndpoints.createMatch(data),
@@ -148,7 +192,7 @@ const AdminMatches: React.FC = () => {
   const categories = categoriesData?.data?.data || [];
   const providers = providersData?.data?.data || [];
   const customers = customersData?.data?.data || [];
-  const progressStageStats = jobProgressData?.data?.stage_stats || {};
+  const progressStageStats = jobProgressResponse?.data?.stage_stats || {};
 
   const resetUpdateData = () => {
     setUpdateData({
@@ -157,6 +201,17 @@ const AdminMatches: React.FC = () => {
       customer_response: '',
       rating: undefined,
       feedback: ''
+    });
+  };
+
+  const resetJobProgressData = () => {
+    setJobProgressData({
+      stage: 'pending',
+      notes: '',
+      location_info: '',
+      estimated_duration: '',
+      actual_duration: '',
+      final_cost: undefined
     });
   };
 
@@ -169,6 +224,18 @@ const AdminMatches: React.FC = () => {
       rating: match.rating,
       feedback: match.feedback || ''
     });
+    
+    // Set current job progress stage
+    const currentStage = getJobProgressStage(match.id);
+    setJobProgressData({
+      stage: currentStage,
+      notes: '',
+      location_info: '',
+      estimated_duration: '',
+      actual_duration: '',
+      final_cost: undefined
+    });
+    
     setIsModalOpen(true);
   };
 
@@ -194,6 +261,30 @@ const AdminMatches: React.FC = () => {
 
       await updateMatchMutation.mutateAsync({
         id: selectedMatch.id.toString(),
+        data: cleanData
+      });
+    }
+  };
+
+  const handleSubmitJobProgress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedMatch) {
+      // Clean the job progress data
+      const cleanData: any = {
+        stage: jobProgressData.stage,
+        notes: jobProgressData.notes || '',
+        location_info: jobProgressData.location_info || '',
+        estimated_duration: jobProgressData.estimated_duration || '',
+        actual_duration: jobProgressData.actual_duration || ''
+      };
+
+      // Only include final_cost if it's provided
+      if (jobProgressData.final_cost && jobProgressData.final_cost > 0) {
+        cleanData.final_cost = jobProgressData.final_cost;
+      }
+
+      await updateJobProgressMutation.mutateAsync({
+        matchId: selectedMatch.id.toString(),
         data: cleanData
       });
     }
@@ -255,8 +346,8 @@ const AdminMatches: React.FC = () => {
   };
 
   const getJobProgressStage = (matchId: number) => {
-    if (!jobProgressData?.data?.data) return 'pending';
-    const progressData = jobProgressData.data.data.find((p: any) => p?.id === matchId);
+    if (!jobProgressResponse?.data?.data) return 'pending';
+    const progressData = jobProgressResponse.data.data.find((p: any) => p?.id === matchId);
     return progressData?.job_progress || 'pending';
   };
 
@@ -331,6 +422,15 @@ const AdminMatches: React.FC = () => {
     };
     return stageLabels[stage as keyof typeof stageLabels] || 'ไม่ระบุ';
   };
+
+  const getJobProgressStages = () => [
+    { value: 'pending', label: 'รอการตอบรับ' },
+    { value: 'accepted', label: 'รับงานแล้ว' },
+    { value: 'arrived', label: 'ถึงหน้างาน' },
+    { value: 'started', label: 'เริ่มดำเนินงาน' },
+    { value: 'completed', label: 'เสร็จงาน' },
+    { value: 'closed', label: 'ปิดงาน' }
+  ];
 
   return (
     <AdminLayout title="จัดการการจับคู่">
@@ -696,12 +796,12 @@ const AdminMatches: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsModalOpen(false)} />
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <form onSubmit={handleSubmitUpdate}>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+              <form onSubmit={updateMode === 'progress' ? handleSubmitJobProgress : handleSubmitUpdate}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-medium text-gray-900">
-                      อัปเดตสถานะการจับคู่
+                      {updateMode === 'progress' ? 'อัปเดตความคืบหน้างาน' : 'อัปเดตสถานะการจับคู่'}
                     </h3>
                     <button
                       type="button"
@@ -709,6 +809,32 @@ const AdminMatches: React.FC = () => {
                       className="text-gray-400 hover:text-gray-600"
                     >
                       <X className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  {/* Mode Tabs */}
+                  <div className="flex border-b border-gray-200 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => setUpdateMode('progress')}
+                      className={`px-4 py-2 text-sm font-medium ${
+                        updateMode === 'progress'
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      ความคืบหน้างาน (5 ขั้นตอน)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUpdateMode('status')}
+                      className={`px-4 py-2 text-sm font-medium ${
+                        updateMode === 'status'
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      สถานะการจับคู่
                     </button>
                   </div>
                   
@@ -727,71 +853,152 @@ const AdminMatches: React.FC = () => {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">สถานะ</label>
-                      <select
-                        value={updateData.status}
-                        onChange={(e) => setUpdateData(prev => ({ ...prev, status: e.target.value as any }))}
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                      >
-                        {MATCH_STATUSES.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">การตอบกลับจากผู้ให้บริการ</label>
-                      <textarea
-                        value={updateData.provider_response}
-                        onChange={(e) => setUpdateData(prev => ({ ...prev, provider_response: e.target.value }))}
-                        rows={3}
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                        placeholder="ข้อความตอบกลับจากผู้ให้บริการ..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">การตอบกลับจากลูกค้า</label>
-                      <textarea
-                        value={updateData.customer_response}
-                        onChange={(e) => setUpdateData(prev => ({ ...prev, customer_response: e.target.value }))}
-                        rows={3}
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                        placeholder="ข้อความตอบกลับจากลูกค้า..."
-                      />
-                    </div>
-
-                    {updateData.status === 'completed' && (
+                    {updateMode === 'status' ? (
                       <>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">คะแนน (1-5)</label>
+                          <label className="block text-sm font-medium text-gray-700">สถานะ</label>
                           <select
-                            value={updateData.rating || ''}
-                            onChange={(e) => setUpdateData(prev => ({ ...prev, rating: e.target.value ? Number(e.target.value) : undefined }))}
+                            value={updateData.status}
+                            onChange={(e) => setUpdateData(prev => ({ ...prev, status: e.target.value as any }))}
                             className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
                           >
-                            <option value="">ไม่ระบุคะแนน</option>
-                            <option value="1">1 - แย่มาก</option>
-                            <option value="2">2 - แย่</option>
-                            <option value="3">3 - ปานกลาง</option>
-                            <option value="4">4 - ดี</option>
-                            <option value="5">5 - ดีมาก</option>
+                            {MATCH_STATUSES.map((status) => (
+                              <option key={status.value} value={status.value}>
+                                {status.label}
+                              </option>
+                            ))}
                           </select>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">ความคิดเห็น</label>
+                          <label className="block text-sm font-medium text-gray-700">การตอบกลับจากผู้ให้บริการ</label>
                           <textarea
-                            value={updateData.feedback}
-                            onChange={(e) => setUpdateData(prev => ({ ...prev, feedback: e.target.value }))}
+                            value={updateData.provider_response}
+                            onChange={(e) => setUpdateData(prev => ({ ...prev, provider_response: e.target.value }))}
                             rows={3}
                             className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                            placeholder="ความคิดเห็นเกี่ยวกับการให้บริการ..."
+                            placeholder="ข้อความตอบกลับจากผู้ให้บริการ..."
                           />
                         </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">การตอบกลับจากลูกค้า</label>
+                          <textarea
+                            value={updateData.customer_response}
+                            onChange={(e) => setUpdateData(prev => ({ ...prev, customer_response: e.target.value }))}
+                            rows={3}
+                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                            placeholder="ข้อความตอบกลับจากลูกค้า..."
+                          />
+                        </div>
+
+                        {updateData.status === 'completed' && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">คะแนน (1-5)</label>
+                              <select
+                                value={updateData.rating || ''}
+                                onChange={(e) => setUpdateData(prev => ({ ...prev, rating: e.target.value ? Number(e.target.value) : undefined }))}
+                                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                              >
+                                <option value="">ไม่ระบุคะแนน</option>
+                                <option value="1">1 - แย่มาก</option>
+                                <option value="2">2 - แย่</option>
+                                <option value="3">3 - ปานกลาง</option>
+                                <option value="4">4 - ดี</option>
+                                <option value="5">5 - ดีมาก</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">ความคิดเห็น</label>
+                              <textarea
+                                value={updateData.feedback}
+                                onChange={(e) => setUpdateData(prev => ({ ...prev, feedback: e.target.value }))}
+                                rows={3}
+                                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                                placeholder="ความคิดเห็นเกี่ยวกับการให้บริการ..."
+                              />
+                            </div>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">ขั้นตอนงาน</label>
+                          <select
+                            value={jobProgressData.stage}
+                            onChange={(e) => setJobProgressData(prev => ({...prev, stage: e.target.value}))}
+                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                          >
+                            {getJobProgressStages().map(stage => (
+                              <option key={stage.value} value={stage.value}>
+                                {stage.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">หมายเหตุ</label>
+                          <textarea
+                            value={jobProgressData.notes}
+                            onChange={(e) => setJobProgressData(prev => ({...prev, notes: e.target.value}))}
+                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                            rows={2}
+                            placeholder="เพิ่มรายละเอียดเพิ่มเติม..."
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">ข้อมูลสถานที่</label>
+                          <input
+                            type="text"
+                            value={jobProgressData.location_info}
+                            onChange={(e) => setJobProgressData(prev => ({...prev, location_info: e.target.value}))}
+                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                            placeholder="รายละเอียดสถานที่ (ถ้ามี)"
+                          />
+                        </div>
+                        
+                        {jobProgressData.stage === 'started' && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">เวลาที่คาดว่าจะเสร็จ (ชั่วโมง)</label>
+                            <input
+                              type="text"
+                              value={jobProgressData.estimated_duration}
+                              onChange={(e) => setJobProgressData(prev => ({...prev, estimated_duration: e.target.value}))}
+                              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                              placeholder="เช่น 2, 1.5"
+                            />
+                          </div>
+                        )}
+                        
+                        {jobProgressData.stage === 'completed' && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">เวลาที่ใช้จริง (ชั่วโมง)</label>
+                              <input
+                                type="text"
+                                value={jobProgressData.actual_duration}
+                                onChange={(e) => setJobProgressData(prev => ({...prev, actual_duration: e.target.value}))}
+                                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                                placeholder="เช่น 2, 1.5"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">ค่าใช้จ่ายจริง (บาท)</label>
+                              <input
+                                type="number"
+                                value={jobProgressData.final_cost || ''}
+                                onChange={(e) => setJobProgressData(prev => ({...prev, final_cost: e.target.value ? Number(e.target.value) : undefined}))}
+                                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                                placeholder="ระบุค่าใช้จ่ายจริง"
+                              />
+                            </div>
+                          </>
+                        )}
                       </>
                     )}
                   </div>
@@ -799,10 +1006,10 @@ const AdminMatches: React.FC = () => {
                 <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                   <button
                     type="submit"
-                    disabled={updateMatchMutation.isLoading}
+                    disabled={updateMode === 'progress' ? updateJobProgressMutation.isLoading : updateMatchMutation.isLoading}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
                   >
-                    {updateMatchMutation.isLoading ? 'กำลังบันทึก...' : 'บันทึก'}
+                    {(updateMode === 'progress' ? updateJobProgressMutation.isLoading : updateMatchMutation.isLoading) ? 'กำลังบันทึก...' : 'บันทึก'}
                   </button>
                   <button
                     type="button"
