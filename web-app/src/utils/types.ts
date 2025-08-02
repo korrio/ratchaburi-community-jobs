@@ -87,6 +87,8 @@ export interface JobMatch {
   provider_location?: string;
   provider_district?: string;
   provider_subdistrict?: string;
+  provider_available_days?: string;
+  provider_available_hours?: string;
   customer_id: number;
   customer_name?: string;
   customer_phone?: string;
@@ -94,6 +96,8 @@ export interface JobMatch {
   customer_location?: string;
   customer_district?: string;
   customer_subdistrict?: string;
+  customer_preferred_date?: string;
+  customer_preferred_time?: string;
   job_description?: string;
   budget_range?: string;
   urgency_level?: 'low' | 'medium' | 'high';

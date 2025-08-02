@@ -432,6 +432,178 @@ const AdminMatches: React.FC = () => {
     { value: 'closed', label: 'ปิดงาน' }
   ];
 
+  const getMatchStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return 'รอการตอบกลับ';
+      case 'accepted': return 'ตอบรับแล้ว';
+      case 'rejected': return 'ปฏิเสธ';
+      case 'completed': return 'สำเร็จ';
+      case 'cancelled': return 'ยกเลิก';
+      default: return 'ไม่ระบุ';
+    }
+  };
+
+  // Helper functions for matching conditions
+  const checkLocationMatch = (match: JobMatch) => {
+    const providerDistrict = match.provider_district;
+    const customerDistrict = match.customer_district;
+    const providerSubdistrict = match.provider_subdistrict;
+    const customerSubdistrict = match.customer_subdistrict;
+    
+    // Same อำเภอ (district) or ตำบล (subdistrict)
+    if (providerDistrict === customerDistrict) return { match: true, level: 'อำเภอ' };
+    if (providerSubdistrict === customerSubdistrict) return { match: true, level: 'ตำบล' };
+    return { match: false, level: 'ไม่ตรงกัน' };
+  };
+
+  const checkPriceMatch = (match: JobMatch) => {
+    const providerPriceRange = match.provider_price_range;
+    const customerBudgetRange = match.budget_range;
+    
+    if (!providerPriceRange || !customerBudgetRange) {
+      return { match: false, ranges: { provider: providerPriceRange || 'ไม่ระบุ', customer: customerBudgetRange || 'ไม่ระบุ' } };
+    }
+    
+    // Extract price ranges and check overlap
+    const extractPriceFromRange = (range: string) => {
+      // Handle different price range formats like "100-500", "ต่ำกว่า 100", "มากกว่า 1000", etc.
+      const match = range.match(/(\d+)(?:-(\d+))?/);
+      if (match) {
+        const min = parseInt(match[1]);
+        const max = match[2] ? parseInt(match[2]) : min;
+        return { min, max };
+      }
+      
+      // Handle text-based ranges
+      if (range.includes('ต่ำ') || range.includes('น้อย')) return { min: 0, max: 500 };
+      if (range.includes('ปานกลาง') || range.includes('กลาง')) return { min: 500, max: 2000 };
+      if (range.includes('สูง') || range.includes('มาก')) return { min: 2000, max: 10000 };
+      
+      return null;
+    };
+    
+    const providerPrice = extractPriceFromRange(providerPriceRange);
+    const customerBudget = extractPriceFromRange(customerBudgetRange);
+    
+    if (!providerPrice || !customerBudget) {
+      // Fallback to string comparison
+      const exactMatch = providerPriceRange === customerBudgetRange;
+      return { match: exactMatch, ranges: { provider: providerPriceRange, customer: customerBudgetRange } };
+    }
+    
+    // Check if there's overlap between price ranges
+    const hasOverlap = providerPrice.min <= customerBudget.max && providerPrice.max >= customerBudget.min;
+    
+    return { 
+      match: hasOverlap, 
+      ranges: { 
+        provider: providerPriceRange, 
+        customer: customerBudgetRange 
+      } 
+    };
+  };
+
+  const checkTimeMatch = (match: JobMatch) => {
+    const providerAvailableDays = match.provider_available_days;
+    const providerAvailableHours = match.provider_available_hours;
+    const customerPreferredDate = match.customer_preferred_date;
+    const customerPreferredTime = match.customer_preferred_time;
+    
+    // Simple time matching logic
+    if (!providerAvailableDays || !customerPreferredDate) {
+      return { match: false, info: 'ข้อมูลไม่ครบถ้วน' };
+    }
+    
+    // Extract day from customer preferred date (assuming format like "2024-01-15")
+    const preferredDay = customerPreferredDate ? new Date(customerPreferredDate).getDay() : -1;
+    const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+    const preferredDayName = dayNames[preferredDay];
+    
+    // Check if provider is available on the preferred day
+    const dayMatch = providerAvailableDays.includes(preferredDayName) || providerAvailableDays.includes('ทุกวัน');
+    
+    // Check time availability (simplified)
+    let timeMatch = true;
+    if (providerAvailableHours && customerPreferredTime) {
+      // This is a simplified check - in reality, you'd need more complex time parsing
+      timeMatch = providerAvailableHours.includes(customerPreferredTime) || 
+                  providerAvailableHours.includes('ตลอดวัน') ||
+                  providerAvailableHours.includes('24 ชั่วโมง');
+    }
+    
+    const overallMatch = dayMatch && timeMatch;
+    let info = '';
+    
+    if (overallMatch) {
+      info = 'ตรงกับเวลาที่ต้องการ';
+    } else if (!dayMatch) {
+      info = `ไม่ว่างในวัน${preferredDayName}`;
+    } else if (!timeMatch) {
+      info = 'เวลาไม่ตรงกัน';
+    }
+    
+    return { match: overallMatch, info };
+  };
+
+  const renderJobStatus = (match: JobMatch) => {
+    const jobStage = getJobProgressStage(match.id);
+    
+    return (
+      <div className="space-y-2">
+        {/* Match Status */}
+        <div className="text-xs">
+          {/*<div className="font-medium text-gray-700 mb-1">สถานะการจับคู่:</div>*/}
+          {getStatusBadge(match.status)}
+        </div>
+        
+        {/* Job Progress */}
+{/*        <div className="text-xs">
+          <div className="font-medium text-gray-700 mb-1">ความคืบหน้า:</div>
+          <span className="text-purple-600 font-medium">{getJobProgressText(jobStage)}</span>
+        </div>*/}
+      </div>
+    );
+  };
+
+  const renderMatchingConditions = (match: JobMatch) => {
+    const locationMatch = checkLocationMatch(match);
+    const priceMatch = checkPriceMatch(match);
+    const timeMatch = checkTimeMatch(match);
+    
+    return (
+      <div className="space-y-1">
+        {/* Simplified Location */}
+        <div className="text-xs text-gray-600">
+          {match.provider_district} → {match.customer_district}
+        </div>
+        
+        {/* Compact Matching Conditions */}
+        <div className="flex items-center space-x-2 text-xs">
+          {locationMatch.match ? (
+            <CheckCircle className="h-3 w-3 text-green-500" />
+          ) : (
+            <XCircle className="h-3 w-3 text-red-500" />
+          )}
+          {priceMatch.match ? (
+            <CheckCircle className="h-3 w-3 text-green-500" />
+          ) : (
+            <XCircle className="h-3 w-3 text-red-500" />
+          )}
+          {timeMatch.match ? (
+            <CheckCircle className="h-3 w-3 text-green-500" />
+          ) : (
+            <XCircle className="h-3 w-3 text-red-500" />
+          )}
+        </div>
+        
+        {/* Legend */}
+{/*        <div className="text-xs text-gray-500">
+          พื้นที่ • ราคา • เวลา
+        </div>*/}
+      </div>
+    );
+  };
+
   return (
     <AdminLayout title="จัดการการจับคู่">
       <div className="space-y-6">
@@ -613,6 +785,12 @@ const AdminMatches: React.FC = () => {
                     การจับคู่
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    สถานะงาน 
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {/*เงื่อนไขการจับคู่ (พื้นที่ • ราคา • เวลา)*/}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     หมวดหมู่
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -635,13 +813,13 @@ const AdminMatches: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                       กำลังโหลด...
                     </td>
                   </tr>
                 ) : matches.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                       ไม่พบข้อมูล
                     </td>
                   </tr>
@@ -666,6 +844,12 @@ const AdminMatches: React.FC = () => {
                               </div>
                             </div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {renderJobStatus(match)}
+                        </td>
+                        <td className="px-6 py-4">
+                          {renderMatchingConditions(match)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
