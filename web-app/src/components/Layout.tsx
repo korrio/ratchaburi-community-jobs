@@ -14,7 +14,8 @@ import {
   Mail,
   MapPin,
   UserPlus,
-  PlusCircle
+  PlusCircle,
+  Presentation
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -39,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({
     // { name: 'การจับคู่งาน', href: '/matches', icon: GitMerge },
     { name: 'ลงทะเบียนผู้ให้บริการ', href: '/providers/register', icon: UserPlus },
     { name: 'โพสต์งานที่ต้องการจ้าง', href: '/customers/register', icon: PlusCircle },
+    { name: 'งานนำเสนอ', href: '/presentation', icon: Presentation },
   ];
 
   const isActive = (path: string) => {
