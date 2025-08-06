@@ -105,7 +105,7 @@ const HomePage: React.FC = () => {
                 className="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg font-medium transition-colors flex items-center justify-center text-white"
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
-                โทรเลย
+                คุยกับ Chatbot
               </a>
             </div>
           </div>

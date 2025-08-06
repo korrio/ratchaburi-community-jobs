@@ -32,8 +32,13 @@ const PresentationPage: React.FC = () => {
     // Slide 1: Cover
     <Slide key={0} className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
       <div className="text-center space-y-8">
-        <div className="text-6xl mb-4">🤝</div>
-        <h1 className="text-5xl font-bold mb-4">ราชบุรีงานชุมชน</h1>
+        <div className="mb-8">
+          <img 
+            src="/job-commu-logo.png" 
+            alt="ราชบุรีงานชุมชน" 
+            className="h-32 w-auto mx-auto mb-4"
+          />
+        </div>
         <h2 className="text-2xl mb-8">แพลตฟอร์มเชื่อมต่อผู้ให้บริการกับผู้รับบริการในชุมชน</h2>
         
         <div className="grid grid-cols-2 gap-8 text-lg">
@@ -160,77 +165,75 @@ const PresentationPage: React.FC = () => {
 
     // Slide 4: Customer Journey
     <Slide key={3}>
-      <div className="max-w-6xl text-center space-y-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">การเดินทางของผู้รับบริการ</h1>
-        <h2 className="text-xl text-gray-600 mb-12">ขั้นตอนการใช้งานสำหรับผู้ที่ต้องการจ้างงาน</h2>
+      <div className="max-w-6xl text-center space-y-4">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">การเดินทางของผู้รับบริการ</h1>
+        <h2 className="text-lg text-gray-600 mb-6">ขั้นตอนการใช้งานสำหรับผู้ที่ต้องการจ้างงาน</h2>
         
-        <div className="space-y-8">
-          <div className="flex items-center justify-center space-x-4 bg-blue-50 p-6 rounded-2xl">
-            <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">1</div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-center space-x-4 bg-blue-50 p-4 rounded-xl">
+            <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">1</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-blue-700">ค้นหาและเลือก</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เข้าเว็บ/LINE</span>
-                <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เลือกประเภทงาน</span>
-                <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ดูรายชื่อผู้ให้บริการ</span>
+              <h3 className="text-lg font-bold text-blue-700">ค้นหาและเลือก</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เข้าเว็บ/LINE</span>
+                <span className="text-sm">→</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เลือกประเภทงาน</span>
+                <span className="text-sm">→</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ดูรายชื่อผู้ให้บริการ</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-green-50 p-6 rounded-2xl">
-            <div className="bg-green-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">2</div>
+          <div className="flex items-center justify-center space-x-4 bg-green-50 p-4 rounded-xl">
+            <div className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">2</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-green-700">ดูรายละเอียด</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ดูโปรไฟล์</span>
-                <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เช็คราคา/เวลา</span>
-                <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">อ่านรีวิว</span>
-                <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เปรียบเทียบ</span>
+              <h3 className="text-lg font-bold text-green-700">ดูรายละเอียด</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ดูโปรไฟล์</span>
+                <span className="text-sm">→</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เช็คราคา/เวลา</span>
+                <span className="text-sm">→</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">อ่านรีวิว</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-yellow-50 p-6 rounded-2xl">
-            <div className="bg-yellow-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">3</div>
+          <div className="flex items-center justify-center space-x-4 bg-yellow-50 p-4 rounded-xl">
+            <div className="bg-yellow-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">3</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-yellow-700">ติดต่อและจอง</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">กดติดต่อ</span>
+              <h3 className="text-lg font-bold text-yellow-700">ติดต่อและจอง</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">กดติดต่อ</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">กรอกรายละเอียดงาน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">กรอกรายละเอียดงาน</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">นัดหมายวันเวลา</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">นัดหมายวันเวลา</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-purple-50 p-6 rounded-2xl">
-            <div className="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">4</div>
+          <div className="flex items-center justify-center space-x-4 bg-purple-50 p-4 rounded-xl">
+            <div className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">4</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-purple-700">รับบริการ</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ผู้ให้บริการมาทำงาน</span>
+              <h3 className="text-lg font-bold text-purple-700">รับบริการ</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ผู้ให้บริการมาทำงาน</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ตรวจสอบผลงาน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ตรวจสอบผลงาน</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ชำระเงิน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ชำระเงิน</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-pink-50 p-6 rounded-2xl">
-            <div className="bg-pink-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">5</div>
+          <div className="flex items-center justify-center space-x-4 bg-pink-50 p-4 rounded-xl">
+            <div className="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">5</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-pink-700">ให้คะแนน</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ให้คะแนนและรีวิว</span>
+              <h3 className="text-lg font-bold text-pink-700">ให้คะแนน</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ให้คะแนนและรีวิว</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ช่วยชุมชนมีข้อมูลที่ดี</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ช่วยชุมชนมีข้อมูลที่ดี</span>
               </div>
             </div>
           </div>
@@ -240,75 +243,75 @@ const PresentationPage: React.FC = () => {
 
     // Slide 5: Provider Journey
     <Slide key={4}>
-      <div className="max-w-6xl text-center space-y-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">การเดินทางของผู้ให้บริการ</h1>
-        <h2 className="text-xl text-gray-600 mb-12">ขั้นตอนการใช้งานสำหรับผู้ที่ต้องการหางาน</h2>
+      <div className="max-w-6xl text-center space-y-4">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">การเดินทางของผู้ให้บริการ</h1>
+        <h2 className="text-lg text-gray-600 mb-6">ขั้นตอนการใช้งานสำหรับผู้ที่ต้องการหางาน</h2>
         
-        <div className="space-y-8">
-          <div className="flex items-center justify-center space-x-4 bg-indigo-50 p-6 rounded-2xl">
-            <div className="bg-indigo-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">1</div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-center space-x-4 bg-indigo-50 p-4 rounded-xl">
+            <div className="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">1</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-indigo-700">ลงทะเบียน</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เข้าเว็บ/LINE</span>
+              <h3 className="text-lg font-bold text-indigo-700">ลงทะเบียน</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เข้าเว็บ/LINE</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">กดลงทะเบียน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">กดลงทะเบียน</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">กรอกข้อมูลส่วนตัว</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">กรอกข้อมูลส่วนตัว</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-teal-50 p-6 rounded-2xl">
-            <div className="bg-teal-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">2</div>
+          <div className="flex items-center justify-center space-x-4 bg-teal-50 p-4 rounded-xl">
+            <div className="bg-teal-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">2</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-teal-700">สร้างโปรไฟล์</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เพิ่มรูปภาพ</span>
+              <h3 className="text-lg font-bold text-teal-700">สร้างโปรไฟล์</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เพิ่มรูปภาพ</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เขียนแนะนำตัว</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เขียนแนะนำตัว</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">กำหนดราคา/เวลาว่าง</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">กำหนดราคา/เวลาว่าง</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-orange-50 p-6 rounded-2xl">
-            <div className="bg-orange-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">3</div>
+          <div className="flex items-center justify-center space-x-4 bg-orange-50 p-4 rounded-xl">
+            <div className="bg-orange-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">3</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-orange-700">รับการจับคู่</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ระบบแจ้งเตือนงานใหม่</span>
+              <h3 className="text-lg font-bold text-orange-700">รับการจับคู่</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ระบบแจ้งเตือนงานใหม่</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">เลือกรับ/ปฏิเสธงาน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">เลือกรับ/ปฏิเสธงาน</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-red-50 p-6 rounded-2xl">
-            <div className="bg-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">4</div>
+          <div className="flex items-center justify-center space-x-4 bg-red-50 p-4 rounded-xl">
+            <div className="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">4</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-red-700">ทำงาน</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">นัดหมายลูกค้า</span>
+              <h3 className="text-lg font-bold text-red-700">ทำงาน</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">นัดหมายลูกค้า</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ไปทำงานตามเวลา</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ไปทำงานตามเวลา</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">ทำงานให้เสร็จสมบูรณ์</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">ทำงานให้เสร็จสมบูรณ์</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-4 bg-emerald-50 p-6 rounded-2xl">
-            <div className="bg-emerald-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl">5</div>
+          <div className="flex items-center justify-center space-x-4 bg-emerald-50 p-4 rounded-xl">
+            <div className="bg-emerald-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg">5</div>
             <div className="flex-1 text-left">
-              <h3 className="text-xl font-bold text-emerald-700">รับชำระและรีวิว</h3>
-              <div className="flex items-center space-x-2 mt-2">
-                <span className="bg-white px-3 py-1 rounded-full text-sm">รับเงิน</span>
+              <h3 className="text-lg font-bold text-emerald-700">รับชำระและรีวิว</h3>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="bg-white px-2 py-1 rounded-full text-xs">รับเงิน</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">รับรีวิวจากลูกค้า</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">รับรีวิวจากลูกค้า</span>
                 <span>→</span>
-                <span className="bg-white px-3 py-1 rounded-full text-sm">สร้างชื่อเสียงในชุมชน</span>
+                <span className="bg-white px-2 py-1 rounded-full text-xs">สร้างชื่อเสียงในชุมชน</span>
               </div>
             </div>
           </div>
@@ -324,9 +327,9 @@ const PresentationPage: React.FC = () => {
         
         <div className="grid grid-cols-3 gap-8 items-start">
           {/* QR Code Section */}
-          <div className="bg-green-50 p-6 rounded-2xl border border-green-200">
+          <div className="bg-green-50 p-4 rounded-xl border border-green-200">
             <div className="text-3xl mb-4">📱</div>
-            <h3 className="text-xl font-bold text-green-700 mb-4">เพิ่มเพื่อน LINE</h3>
+            <h3 className="text-lg font-bold text-green-700 mb-4">เพิ่มเพื่อน LINE</h3>
             <div className="flex justify-center mb-4">
               <QRCode value="https://lin.ee/9G2yLV0" size={150} className="rounded-lg" />
             </div>
@@ -338,7 +341,7 @@ const PresentationPage: React.FC = () => {
           </div>
 
           {/* Flowchart Section */}
-          <div className="col-span-2 bg-white p-6 rounded-2xl border shadow-lg">
+          <div className="col-span-2 bg-white p-4 rounded-xl border shadow-lg">
             <Mermaid 
               chart={`graph TD
     A[เริ่มต้น<br/>Add Friend LINE Bot] --> B{เลือกบทบาท}
@@ -546,7 +549,7 @@ const PresentationPage: React.FC = () => {
             <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl border border-green-200">
               <div className="flex items-center justify-center mb-4">
                 <TrendingUp className="h-10 w-10 text-green-600 mr-3" />
-                <h2 className="text-xl font-bold text-green-700">สำหรับผู้ให้บริการ</h2>
+                <h2 className="text-lg font-bold text-green-700">สำหรับผู้ให้บริการ</h2>
               </div>
               <div className="space-y-3 text-left">
                 <p>• หารายได้เพิ่ม จากฝีมือที่มี</p>
@@ -559,7 +562,7 @@ const PresentationPage: React.FC = () => {
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl border border-blue-200">
               <div className="flex items-center justify-center mb-4">
                 <Target className="h-10 w-10 text-blue-600 mr-3" />
-                <h2 className="text-xl font-bold text-blue-700">สำหรับผู้รับบริการ</h2>
+                <h2 className="text-lg font-bold text-blue-700">สำหรับผู้รับบริการ</h2>
               </div>
               <div className="space-y-3 text-left">
                 <p>• ประหยัดเวลาในการหาคนทำงาน</p>
@@ -612,10 +615,13 @@ const PresentationPage: React.FC = () => {
           <div className="bg-blue-50 p-8 rounded-2xl border border-blue-200">
             <div className="text-5xl mb-4">🌐</div>
             <h2 className="text-2xl font-bold text-blue-700 mb-6">เว็บแอปพลิเคชัน</h2>
+            <div className="flex justify-center mb-4">
+              <QRCode value="https://ratchaburi-community-jobs.vercel.app" size={120} className="rounded-lg" />
+            </div>
             <div className="space-y-4 text-left">
               <div className="flex items-start space-x-3">
                 <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
-                <span>เข้าเว็บไซต์: <code className="bg-gray-200 px-2 py-1 rounded">ratchaburicommunity.co.th</code></span>
+                <span>เข้าเว็บไซต์: <code className="bg-gray-200 px-2 py-1 rounded">ratchaburi-community-jobs.vercel.app</code></span>
               </div>
               <div className="flex items-start space-x-3">
                 <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
@@ -630,26 +636,8 @@ const PresentationPage: React.FC = () => {
                 <span>เริ่มค้นหา หรือ ให้บริการได้ทันที!</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
-          <div className="flex items-center justify-center mb-4">
-            <Phone className="h-8 w-8 text-gray-600 mr-3" />
-            <h2 className="text-xl font-bold text-gray-700">ติดต่อสอบถาม</h2>
-          </div>
-          <div className="grid grid-cols-3 gap-6 text-center">
-            <div>
-              <p className="font-semibold">โทรศัพท์</p>
-              <p className="text-gray-600">0X-XXX-XXXX</p>
-            </div>
-            <div>
-              <p className="font-semibold">อีเมล</p>
-              <p className="text-gray-600">support@ratchaburicommunity.co.th</p>
-            </div>
-            <div>
-              <p className="font-semibold">ที่อยู่</p>
-              <p className="text-gray-600">ศูนย์จัดการแรงงานระดับพื้นที่ตำบลแพงพวย</p>
+            <div className="mt-4 text-center">
+              <p className="text-xs text-blue-600 font-mono">https://ratchaburi-community-jobs.vercel.app</p>
             </div>
           </div>
         </div>
@@ -899,7 +887,7 @@ const PresentationPage: React.FC = () => {
 
       {/* Export Progress */}
       {isExporting && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white p-6 rounded-2xl z-50">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-75 text-white p-4 rounded-xl z-50">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
             <p className="text-lg font-semibold">กำลังส่งออก...</p>

@@ -35,12 +35,12 @@ const Layout: React.FC<LayoutProps> = ({
 
   const navigation = [
     // { name: 'หน้าแรก', href: '/', icon: Home },
+    { name: 'งานนำเสนอ', href: '/presentation', icon: Presentation },
     { name: 'ผู้ให้บริการ', href: '/providers', icon: UserCheck },
     { name: 'ผู้ต้องการจ้าง', href: '/customers', icon: Users },
     // { name: 'การจับคู่งาน', href: '/matches', icon: GitMerge },
     { name: 'ลงทะเบียนผู้ให้บริการ', href: '/providers/register', icon: UserPlus },
     { name: 'โพสต์งานที่ต้องการจ้าง', href: '/customers/register', icon: PlusCircle },
-    { name: 'งานนำเสนอ', href: '/presentation', icon: Presentation },
   ];
 
   const isActive = (path: string) => {

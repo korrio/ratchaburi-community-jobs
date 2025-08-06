@@ -432,7 +432,7 @@ const ProviderDetailPage: React.FC = () => {
                   className="flex items-center justify-center w-full bg-primary-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
                 >
                   <Phone className="h-5 w-5 mr-2" />
-                  โทรเลย
+                  คุยกับ Chatbot
                 </a>
                 {provider.line_id && (
                   <a
