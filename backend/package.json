@@ -8,7 +8,6 @@
     "dev": "nodemon server.js",
     "test": "jest",
     "seed": "node utils/seed.js",
-    "postinstall": "node utils/seed.js",
     "build": "node utils/seed.js"
   },
   "keywords": ["community", "jobs", "ratchaburi", "api"],
