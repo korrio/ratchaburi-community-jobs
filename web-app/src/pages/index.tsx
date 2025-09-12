@@ -15,7 +15,9 @@ import {
   Clock,
   CheckCircle,
   Zap,
-  MessageCircle
+  MessageCircle,
+  UserPlus,
+  Briefcase
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { apiEndpoints } from '@/utils/api';
@@ -170,57 +172,78 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {featuredProviders.map((provider: ServiceProvider) => (
-              <div key={provider.id} className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {provider.name}
-                    </h3>
-                    <p className="text-primary-600 font-medium">
-                      {provider.category_icon} {provider.category_name}
-                    </p>
-                  </div>
-                  <div className="flex items-center text-yellow-500">
-                    <Star className="h-4 w-4 fill-current" />
-                    <span className="ml-1 text-sm font-medium">
-                      {provider.rating}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {provider.district}, {provider.subdistrict}
-                  </div>
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <Phone className="h-4 w-4 mr-2" />
-                    {provider.phone}
-                  </div>
-                  {provider.price_range && (
-                    <div className="text-sm text-gray-600">
-                      ราคา: {provider.price_range}
+          {featuredProviders.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {featuredProviders.map((provider: ServiceProvider) => (
+                <div key={provider.id} className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {provider.name}
+                      </h3>
+                      <p className="text-primary-600 font-medium">
+                        {provider.category_icon} {provider.category_name}
+                      </p>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    งานที่ทำ: {provider.total_jobs} งาน
+                    <div className="flex items-center text-yellow-500">
+                      <Star className="h-4 w-4 fill-current" />
+                      <span className="ml-1 text-sm font-medium">
+                        {provider.rating}
+                      </span>
+                    </div>
                   </div>
-                  <Link
-                    href={`/providers/${provider.id}`}
-                    className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center"
-                  >
-                    ดูรายละเอียด
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </Link>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-gray-600 text-sm">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {provider.district}, {provider.subdistrict}
+                    </div>
+                    <div className="flex items-center text-gray-600 text-sm">
+                      <Phone className="h-4 w-4 mr-2" />
+                      {provider.phone}
+                    </div>
+                    {provider.price_range && (
+                      <div className="text-sm text-gray-600">
+                        ราคา: {provider.price_range}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-500">
+                      งานที่ทำ: {provider.total_jobs} งาน
+                    </div>
+                    <Link
+                      href={`/providers/${provider.id}`}
+                      className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center"
+                    >
+                      ดูรายละเอียด
+                      <ArrowRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="bg-gray-100 rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                <UserPlus className="h-10 w-10 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                ยังไม่มีผู้ให้บริการในระบบ
+              </h3>
+              <p className="text-gray-600 mb-6">
+                เป็นคนแรกที่ลงทะเบียนให้บริการในชุมชนราชบุรี
+              </p>
+              <Link
+                href="/providers/register"
+                className="btn btn-primary"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                ลงทะเบียนผู้ให้บริการ
+              </Link>
+            </div>
+          )}
 
           <div className="text-center">
             <Link
@@ -245,61 +268,82 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {recentCustomers.map((customer: Customer) => (
-              <div key={customer.id} className="bg-gray-50 rounded-lg p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {customer.name}
-                    </h3>
-                    <p className="text-primary-600 font-medium">
-                      {customer.category_icon} {customer.category_name}
-                    </p>
-                  </div>
-                  <div className={`badge ${
-                    customer.urgency_level === 'high' ? 'badge-error' :
-                    customer.urgency_level === 'medium' ? 'badge-warning' :
-                    'badge-success'
-                  }`}>
-                    {customer.urgency_level === 'high' ? 'เร่งด่วน' :
-                     customer.urgency_level === 'medium' ? 'ปานกลาง' :
-                     'ไม่เร่งด่วน'}
-                  </div>
-                </div>
-                
-                <p className="text-gray-700 mb-4 line-clamp-2">
-                  {customer.job_description}
-                </p>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {customer.district}, {customer.subdistrict}
-                  </div>
-                  {customer.budget_range && (
-                    <div className="text-sm text-gray-600">
-                      ค่าจ้าง: {customer.budget_range}
+          {recentCustomers.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {recentCustomers.map((customer: Customer) => (
+                <div key={customer.id} className="bg-gray-50 rounded-lg p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {customer.name}
+                      </h3>
+                      <p className="text-primary-600 font-medium">
+                        {customer.category_icon} {customer.category_name}
+                      </p>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {new Date(customer.created_at).toLocaleDateString('th-TH')}
+                    <div className={`badge ${
+                      customer.urgency_level === 'high' ? 'badge-error' :
+                      customer.urgency_level === 'medium' ? 'badge-warning' :
+                      'badge-success'
+                    }`}>
+                      {customer.urgency_level === 'high' ? 'เร่งด่วน' :
+                       customer.urgency_level === 'medium' ? 'ปานกลาง' :
+                       'ไม่เร่งด่วน'}
+                    </div>
                   </div>
-                  <Link
-                    href={`/customers/${customer.id}`}
-                    className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center"
-                  >
-                    ดูรายละเอียด
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </Link>
+                  
+                  <p className="text-gray-700 mb-4 line-clamp-2">
+                    {customer.job_description}
+                  </p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-gray-600 text-sm">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {customer.district}, {customer.subdistrict}
+                    </div>
+                    {customer.budget_range && (
+                      <div className="text-sm text-gray-600">
+                        ค่าจ้าง: {customer.budget_range}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {new Date(customer.created_at).toLocaleDateString('th-TH')}
+                    </div>
+                    <Link
+                      href={`/customers/${customer.id}`}
+                      className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center"
+                    >
+                      ดูรายละเอียด
+                      <ArrowRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="bg-gray-100 rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                <Briefcase className="h-10 w-10 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                ยังไม่มีงานที่ต้องการจ้าง
+              </h3>
+              <p className="text-gray-600 mb-6">
+                เป็นคนแรกที่โพสต์งานในชุมชนราชบุรี
+              </p>
+              <Link
+                href="/customers/register"
+                className="btn btn-primary"
+              >
+                <Briefcase className="h-4 w-4 mr-2" />
+                โพสต์งานที่ต้องการจ้าง
+              </Link>
+            </div>
+          )}
 
           <div className="text-center">
             <Link

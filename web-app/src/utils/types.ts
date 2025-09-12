@@ -158,6 +158,8 @@ export interface ProviderFormData {
   bank_account_number?: string;
   bank_account_name?: string;
   bank_name?: string;
+  guardian_name?: string;
+  guardian_phone?: string;
   is_active: boolean;
 }
 
@@ -177,6 +179,8 @@ export interface ProviderFormErrors {
   bank_account_number?: string;
   bank_account_name?: string;
   bank_name?: string;
+  guardian_name?: string;
+  guardian_phone?: string;
   is_active?: string;
 }
 

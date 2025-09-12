@@ -15,6 +15,8 @@ const providerSchema = Joi.object({
   price_range: Joi.string().optional().max(100),
   available_days: Joi.string().optional().max(100),
   available_hours: Joi.string().optional().max(100),
+  guardian_name: Joi.string().optional().allow('').max(100),
+  guardian_phone: Joi.string().optional().allow('').pattern(/^[0-9-]{10,12}$/),
   rating: Joi.number().min(0).max(5).optional(),
   total_jobs: Joi.number().integer().min(0).optional(),
   is_active: Joi.boolean().default(true)
@@ -206,15 +208,16 @@ class ProviderController {
       const sql = `
         INSERT INTO service_providers (
           name, phone, line_id, service_category_id, location, district, subdistrict,
-          province, description, price_range, available_days, available_hours, is_active
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          province, description, price_range, available_days, available_hours,
+          guardian_name, guardian_phone, is_active
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await db.run(sql, [
         value.name, value.phone, value.line_id, value.service_category_id,
         value.location, value.district, value.subdistrict, value.province,
         value.description, value.price_range, value.available_days,
-        value.available_hours, value.is_active
+        value.available_hours, value.guardian_name, value.guardian_phone, value.is_active
       ]);
 
       res.status(201).json({
@@ -254,7 +257,8 @@ class ProviderController {
           name = ?, phone = ?, line_id = ?, service_category_id = ?,
           location = ?, district = ?, subdistrict = ?, province = ?,
           description = ?, price_range = ?, available_days = ?,
-          available_hours = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+          available_hours = ?, guardian_name = ?, guardian_phone = ?, 
+          is_active = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `;
 
@@ -262,7 +266,8 @@ class ProviderController {
         value.name, value.phone, value.line_id, value.service_category_id,
         value.location, value.district, value.subdistrict, value.province,
         value.description, value.price_range, value.available_days,
-        value.available_hours, value.is_active, id
+        value.available_hours, value.guardian_name, value.guardian_phone,
+        value.is_active, id
       ]);
 
       if (result.changes === 0) {

@@ -211,6 +211,36 @@ class Database {
         });
       }
     });
+
+    // Add guardian fields to service_providers table if they don't exist
+    this.db.all("PRAGMA table_info(service_providers)", (err, columns) => {
+      if (err) {
+        console.error('Error checking service_providers table structure:', err);
+        return;
+      }
+
+      const columnNames = columns.map(col => col.name);
+      
+      if (!columnNames.includes('guardian_name')) {
+        this.db.run("ALTER TABLE service_providers ADD COLUMN guardian_name TEXT", (err) => {
+          if (err) {
+            console.error('Error adding guardian_name column:', err);
+          } else {
+            console.log('✅ Added guardian_name column to service_providers table');
+          }
+        });
+      }
+
+      if (!columnNames.includes('guardian_phone')) {
+        this.db.run("ALTER TABLE service_providers ADD COLUMN guardian_phone TEXT", (err) => {
+          if (err) {
+            console.error('Error adding guardian_phone column:', err);
+          } else {
+            console.log('✅ Added guardian_phone column to service_providers table');
+          }
+        });
+      }
+    });
   }
 
   // Helper method to run queries with promises
