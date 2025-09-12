@@ -55,15 +55,37 @@ const HomePage: React.FC = () => {
   return (
     <Layout title="JOB ชุมชน - แพลตฟอร์มจับคู่งานชุมชน">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="min-h-screen w-full bg-[#f8fafc] relative">
+        {/* Bottom Fade Grid Background */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+              linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
+            `,
+            backgroundSize: "20px 30px",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 100%, #000 60%, transparent 100%)",
+            maskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 100%, #000 60%, transparent 100%)",
+          }}
+        />
+        
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex items-center min-h-screen">
+          <div className="w-full">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            {/*<h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
               JOB ชุมชน
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100">
-              เชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี
-            </p>
+            </h1>*/}
+            
+            <div className="mb-8">
+              <img src="./logo.png" alt="JOB ชุมชน Logo" className="w-[200px] max-w-[200px] mx-auto mb-4" />
+              <p className="text-xl md:text-2xl text-gray-600">
+                เชื่อมต่อผู้ให้บริการกับผู้ต้องการจ้างงานในชุมชนราชบุรี
+              </p>
+            </div>
             
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
@@ -88,14 +110,14 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/providers"
-                className="bg-white text-primary-700 px-8 py-3 rounded-lg font-medium hover:bg-primary-50 transition-colors flex items-center justify-center"
+                className="bg-primary-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center justify-center"
               >
                 <UserCheck className="h-5 w-5 mr-2" />
                 ดูผู้ให้บริการ
               </Link>
               <Link
                 href="/customers"
-                className="bg-primary-800 hover:bg-primary-900 px-8 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+                className="bg-gray-800 hover:bg-gray-900 px-8 py-3 rounded-lg font-medium transition-colors flex items-center justify-center text-white"
               >
                 <Users className="h-5 w-5 mr-2" />
                 ดูงานที่ต้องการจ้าง
@@ -111,6 +133,7 @@ const HomePage: React.FC = () => {
               </a>
             </div>
           </div>
+        </div>
         </div>
       </div>
 
@@ -161,7 +184,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Featured Providers Section */}
-      <div className="bg-gray-50 py-16">
+      <div className="hidden bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -257,7 +280,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Recent Job Requests Section */}
-      <div className="bg-white py-16">
+      <div className="hidden bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">

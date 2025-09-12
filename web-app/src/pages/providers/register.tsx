@@ -373,6 +373,48 @@ const ProviderRegisterPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Guardian Information */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <UserCheck className="h-5 w-5 mr-2" />
+              ข้อมูลผู้ปกครอง/ครู (สำหรับผู้ใช้อายุต่ำกว่า 15 ปี)
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ชื่อ-นามสกุล ผู้ปกครอง/ครู
+                </label>
+                <input
+                  type="text"
+                  name="guardian_name"
+                  value={formData.guardian_name}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="ชื่อ-นามสกุล ผู้ปกครอง หรือ ครู"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  เบอร์โทรศัพท์ ผู้ปกครอง/ครู
+                </label>
+                <input
+                  type="tel"
+                  name="guardian_phone"
+                  value={formData.guardian_phone}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="08X-XXX-XXXX"
+                />
+              </div>
+            </div>
+            
+            <p className="mt-4 text-sm text-gray-500">
+              สำหรับผู้ที่มีอายุต่ำกว่า 15 ปี จำเป็นต้องมีผู้ปกครองหรือครูให้การยินยอม
+            </p>
+          </div>
+
           {/* Service Information */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -441,47 +483,7 @@ const ProviderRegisterPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Guardian Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <UserCheck className="h-5 w-5 mr-2" />
-              ข้อมูลผู้ปกครอง/ครู (สำหรับผู้ใช้อายุต่ำกว่า 15 ปี)
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ชื่อ-นามสกุล ผู้ปกครอง/ครู
-                </label>
-                <input
-                  type="text"
-                  name="guardian_name"
-                  value={formData.guardian_name}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="ชื่อ-นามสกุล ผู้ปกครอง หรือ ครู"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  เบอร์โทรศัพท์ ผู้ปกครอง/ครู
-                </label>
-                <input
-                  type="tel"
-                  name="guardian_phone"
-                  value={formData.guardian_phone}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="08X-XXX-XXXX"
-                />
-              </div>
-            </div>
-            
-            <p className="mt-4 text-sm text-gray-500">
-              สำหรับผู้ที่มีอายุต่ำกว่า 15 ปี จำเป็นต้องมีผู้ปกครองหรือครูให้การยินยอม
-            </p>
-          </div>
+          
 
           {/* Banking Information */}
           <div className="bg-white rounded-lg shadow-md p-6">
