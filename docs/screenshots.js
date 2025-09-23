@@ -18,13 +18,13 @@ async function captureScreenshots() {
 
   try {
     // Base URL - adjust if different
-    const baseUrl = 'http://localhost:3001';
+    const baseUrl = 'http://localhost:3000';
 
     // Helper function to take screenshot
     async function takeScreenshot(url, filename, selector = null) {
       console.log(`Capturing: ${filename}`);
-      await page.goto(url, { waitUntil: 'networkidle' });
-      await page.waitForTimeout(2000); // Wait for animations/loading
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
+      await page.waitForTimeout(3000); // Wait for animations/loading
       
       if (selector) {
         await page.locator(selector).screenshot({ 
@@ -42,7 +42,6 @@ async function captureScreenshots() {
 
     // Homepage screenshots
     await takeScreenshot(`${baseUrl}/`, 'web-homepage.png');
-    await takeScreenshot(`${baseUrl}/`, 'web-hero-section.png', '.min-h-screen.w-full');
 
     // Provider pages
     await takeScreenshot(`${baseUrl}/providers`, 'web-providers-list.png');
