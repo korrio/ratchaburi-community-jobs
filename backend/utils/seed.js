@@ -169,12 +169,20 @@ async function seedDatabase() {
   try {
     console.log('🌱 Starting database seeding...');
 
+    // Disable foreign key checks temporarily for data clearing
+    console.log('🔓 Disabling foreign key checks...');
+    await db.run('PRAGMA foreign_keys = OFF');
+
     // Clear existing data first
     console.log('🧹 Clearing existing data...');
     await db.run('DELETE FROM job_matches');
     await db.run('DELETE FROM service_providers');
     await db.run('DELETE FROM customers');
     await db.run('DELETE FROM service_categories');
+    
+    // Re-enable foreign key checks
+    console.log('🔒 Re-enabling foreign key checks...');
+    await db.run('PRAGMA foreign_keys = ON');
     
     // Insert service categories
     console.log('📝 Inserting service categories...');
