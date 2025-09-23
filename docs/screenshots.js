@@ -18,7 +18,7 @@ async function captureScreenshots() {
 
   try {
     // Base URL - adjust if different
-    const baseUrl = 'http://localhost:3000';
+    const baseUrl = 'http://localhost:3001';
 
     // Helper function to take screenshot
     async function takeScreenshot(url, filename, selector = null) {
