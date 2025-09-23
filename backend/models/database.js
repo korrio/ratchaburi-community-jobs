@@ -210,6 +210,16 @@ class Database {
           }
         });
       }
+
+      if (!columnNames.includes('preferred_contact')) {
+        this.db.run("ALTER TABLE customers ADD COLUMN preferred_contact TEXT DEFAULT 'phone'", (err) => {
+          if (err) {
+            console.error('Error adding preferred_contact column:', err);
+          } else {
+            console.log('✅ Added preferred_contact column to customers table');
+          }
+        });
+      }
     });
 
     // Add guardian fields to service_providers table if they don't exist
@@ -237,6 +247,37 @@ class Database {
             console.error('Error adding guardian_phone column:', err);
           } else {
             console.log('✅ Added guardian_phone column to service_providers table');
+          }
+        });
+      }
+
+      // Add banking fields if they don't exist
+      if (!columnNames.includes('bank_account_number')) {
+        this.db.run("ALTER TABLE service_providers ADD COLUMN bank_account_number TEXT", (err) => {
+          if (err) {
+            console.error('Error adding bank_account_number column:', err);
+          } else {
+            console.log('✅ Added bank_account_number column to service_providers table');
+          }
+        });
+      }
+
+      if (!columnNames.includes('bank_account_name')) {
+        this.db.run("ALTER TABLE service_providers ADD COLUMN bank_account_name TEXT", (err) => {
+          if (err) {
+            console.error('Error adding bank_account_name column:', err);
+          } else {
+            console.log('✅ Added bank_account_name column to service_providers table');
+          }
+        });
+      }
+
+      if (!columnNames.includes('bank_name')) {
+        this.db.run("ALTER TABLE service_providers ADD COLUMN bank_name TEXT", (err) => {
+          if (err) {
+            console.error('Error adding bank_name column:', err);
+          } else {
+            console.log('✅ Added bank_name column to service_providers table');
           }
         });
       }
