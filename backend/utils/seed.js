@@ -217,13 +217,17 @@ async function seedDatabase() {
       
       await db.run(
         `INSERT INTO service_providers (
-          name, phone, line_id, service_category_id, location, district, subdistrict,
-          description, price_range, available_days, available_hours, rating, total_jobs
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          name, phone, line_id, service_category_id, location, district, subdistrict, province,
+          description, price_range, available_days, available_hours, 
+          bank_account_number, bank_account_name, bank_name, guardian_name, guardian_phone,
+          rating, total_jobs
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           provider.name, provider.phone, provider.line_id, categoryId,
-          provider.location, provider.district, provider.subdistrict, provider.description,
-          provider.price_range, provider.available_days, provider.available_hours,
+          provider.location, provider.district, provider.subdistrict, provider.province || 'ราชบุรี',
+          provider.description, provider.price_range, provider.available_days, provider.available_hours,
+          provider.bank_account_number || null, provider.bank_account_name || null, provider.bank_name || null,
+          provider.guardian_name || null, provider.guardian_phone || null,
           provider.rating, provider.total_jobs
         ]
       );
@@ -249,13 +253,14 @@ async function seedDatabase() {
       
       await db.run(
         `INSERT INTO customers (
-          name, phone, line_id, location, district, subdistrict, service_category_id,
-          job_description, budget_range, urgency_level
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          name, phone, line_id, location, district, subdistrict, province, service_category_id,
+          job_description, budget_range, preferred_date, preferred_time, urgency_level, preferred_contact
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           customer.name, customer.phone, customer.line_id, customer.location,
-          customer.district, customer.subdistrict, categoryId,
-          customer.job_description, customer.budget_range, customer.urgency_level
+          customer.district, customer.subdistrict, customer.province || 'ราชบุรี', categoryId,
+          customer.job_description, customer.budget_range, customer.preferred_date || null,
+          customer.preferred_time || null, customer.urgency_level, customer.preferred_contact || 'phone'
         ]
       );
     }
